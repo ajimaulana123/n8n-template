@@ -1,0 +1,1794 @@
+{
+  "name": "My workflow",
+  "nodes": [
+    {
+      "parameters": {
+        "updates": [
+          "message"
+        ],
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegramTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        -352,
+        1088
+      ],
+      "id": "d925741d-e220-4286-b3b4-fce4b7cc2340",
+      "name": "Telegram Trigger",
+      "webhookId": "c2ffe3b6-b5b3-441f-8f5e-afe569535275",
+      "credentials": {
+        "telegramApi": {
+          "id": "U3ezr80AdwRyTJzR",
+          "name": "ini atmin"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $('Telegram Trigger').item.json.message.text }}",
+        "options": {
+          "systemMessage": "=Kamu adalah content writer profesional yang ahli dalam membuat konten untuk WordPress. Berdasarkan topik yang diberikan, buatkan:\n1. Judul artikel yang menarik, SEO-friendly, dan relevan dengan topik.\n2. Konten artikel lengkap minimal 500 kata dengan struktur:\n   - Pendahuluan (1-2 paragraf)\n   - Isi artikel dengan minimal 3 sub-heading\n   - Kesimpulan (1-2 paragraf)\n3. Tags yang relevan untuk artikel (5-8 tags).\n4. Penyisipan gambar: Jika URL gambar disediakan (misalnya, dari input seperti `source_url`), masukkan minimal satu tag `<img>` dalam konten artikel di posisi yang relevan (misalnya, setelah pendahuluan atau di bawah sub-heading tertentu) dengan format `<img src=\"URL_GAMBAR\" alt=\"DESKRIPSI_GAMBAR\" style=\"max-width: 100%; height: auto;\">`. Deskripsi gambar harus relevan dengan konteks artikel. Jika tidak ada URL gambar, buat konten tanpa gambar tetapi tetap siap publikasi. ( ini source urlnya: {{ $('If2').item.json.body_img_url }} )\n\n---------------------------\n\nGaya Penulisan:\n1. Struktur dan Alur:  \nAlur jelas dan terorganisir, mengikuti urutan logis: pengenalan tujuan, penjelasan materi, praktik, dan refleksi. Narasi kronologis memudahkan pembaca mengikuti proses pembelajaran, dengan tahap memahami, menerapkan, dan merefleksikan dijelaskan rinci.\n\n2. Bahasa:  \nFormal, mudah dipahami, sesuai konteks pendidikan. Istilah teknis seperti \"visualisasi data\" dan \"insight\" digunakan tepat, dengan penjelasan sederhana untuk pembaca awam. Kalimat panjang sedikit berulang, tetapi pesan tetap jelas.\n\n3. Nada dan Gaya**:  \nReflektif, pedagogis, dan inspiratif, mencerminkan antusiasme pendidik terhadap pembelajaran bermakna. Menonjolkan keterampilan analisis data dan kaitannya dengan dunia nyata.\n\n4. Pendekatan Pembelajaran**:  \nBerbasis critical thinking dan problem-solving, student-centered, dengan kolaborasi (tutor sebaya) dan refleksi. Menekankan prinsip berkesadaran, bermakna, dan menyenangkan, menggabungkan aspek teknis dan filosofi pendidikan.\n\n---------------------------\n\nFormat output:\nJUDUL: [judul artikel]\nKONTEN: [isi artikel lengkap dalam format HTML yang bersih menggunakan <h2>, <h3>, <p>, <ul>, <li>, dan <img> jika URL gambar tersedia, tanpa tanda ** atau markdown formatting]\nTAGS: [tag1, tag2, tag3, tag4, tag5, tag6, tag7, tag8]\n\n---------------------------\n\nPenting:\n- Gunakan format HTML yang proper (misalnya, <h2> untuk sub-heading, <p> untuk paragraf, <img> untuk gambar) agar siap dipublikasikan langsung ke WordPress.\n- Pastikan tag `<img>` ditempatkan secara strategis (misalnya, setelah pendahuluan atau di antara sub-heading) dengan atribut `alt` yang SEO-friendly dan relevan.\n- Jika URL gambar disediakan, gunakan URL tersebut dalam tag `<img>` dan pastikan deskripsi gambar relevan dengan konten.\n- Untuk TAGS, berikan 5-8 tags yang relevan dengan topik, pisahkan dengan koma.\n- Buat konten yang menarik, informatif, dan dioptimalkan untuk SEO, siap dipublikasikan langsung ke WordPress.\n- Jika tidak ada URL gambar, tetap hasilkan konten lengkap tanpa gambar, tetapi tetap terstruktur dan menarik."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2.1,
+      "position": [
+        768,
+        896
+      ],
+      "id": "fb63d984-cfb7-4d47-b924-93b878070d26",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "modelName": "models/gemini-2.5-pro",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        864,
+        1120
+      ],
+      "id": "68a8cadf-c607-4924-a8d1-aaca01723e07",
+      "name": "Google Gemini Chat Model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "znT1aHkmDPfPgWzr",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "d3eb94c4-40b3-4572-b4db-7a31bf604923",
+              "name": "article_title",
+              "value": "={{ $json.output.match(/JUDUL: (.+)/)?.[1] || 'Artikel Baru' }}",
+              "type": "string"
+            },
+            {
+              "id": "84015023-31ee-417f-b7a1-8643dcd1f0e6",
+              "name": "article_content",
+              "value": "={{ $json.output.match(/KONTEN:\\s*([\\s\\S]+?)(?=GAMBAR:|$)/)?.[1]?.trim().replace(/\\*\\*\\*/g, '').replace(/^JUDUL:.*?\\n/gm, '').replace(/^KONTEN:\\s*/gm, '').replace(/^.*Tentu, ini adalah konten lengkap yang Anda minta\\..*?\\n/gm, '').replace(/^GAMBAR:.*$/gm, '').trim() || '' }}",
+              "type": "string"
+            },
+            {
+              "id": "4159f13e-e252-4da4-8c7b-44c260742f97",
+              "name": "article_tags",
+              "value": "={{ $json.output.match(/TAGS: (.+)/)?.[1] || 'AI-Generated, Blog, Article' }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1168,
+        896
+      ],
+      "id": "181bc915-2096-4863-8c84-072fe36a4048",
+      "name": "Ekstrak Data Konten"
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.message.caption }}",
+                    "rightValue": "",
+                    "operator": {
+                      "type": "string",
+                      "operation": "exists",
+                      "singleValue": true
+                    },
+                    "id": "126fd67a-d645-4634-a88a-9f5eb5590cf8"
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "ad225b99-179c-40f6-a9cb-bc1182fa20b1",
+                    "leftValue": "={{ $json.message.text }}",
+                    "rightValue": "=/start",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "47b90cec-27a8-4757-8f79-c502c7e1bb26",
+                    "leftValue": "={{ $json.message.text }}",
+                    "rightValue": "={{ $json.message.text }}",
+                    "operator": {
+                      "type": "string",
+                      "operation": "exists",
+                      "singleValue": true
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "2adff6bd-2be0-4333-b5ac-3d9b785018e7",
+                    "leftValue": "={{ $json.message.caption }}",
+                    "rightValue": "",
+                    "operator": {
+                      "type": "string",
+                      "operation": "notExists",
+                      "singleValue": true
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.2,
+      "position": [
+        -128,
+        1056
+      ],
+      "id": "1e268cd4-ea76-4856-81e8-ddf30c52d64a",
+      "name": "Switch"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "dbdc6052-911e-4562-9eb6-751380e40998",
+              "leftValue": "={{ $json.message.caption }}",
+              "rightValue": "thumbnail",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "or"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        96,
+        400
+      ],
+      "id": "46db0d20-c00a-4d52-86bb-e19bcfd84cc7",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "url": "https://api.telegram.org/bot[you're token]/getFile",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "file_id",
+              "value": "={{ $('Telegram Trigger').item.json.message.photo[$('Telegram Trigger').item.json.message.photo.length - 1].file_id }}"
+            }
+          ]
+        },
+        "options": {
+          "response": {}
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1136,
+        144
+      ],
+      "id": "9c3b7764-2f36-4055-abd4-36e542ae89a2",
+      "name": "thumnail_req"
+    },
+    {
+      "parameters": {
+        "url": "=https://api.telegram.org/bot[you're token]/getFile",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "file_id",
+              "value": "={{ $('Telegram Trigger').item.json.message.photo[$('Telegram Trigger').item.json.message.photo.length -1 ].file_id }}"
+            }
+          ]
+        },
+        "options": {
+          "response": {}
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        864,
+        592
+      ],
+      "id": "8316ced7-afb2-414b-8c16-3c0f4d7666f4",
+      "name": "body_req"
+    },
+    {
+      "parameters": {
+        "url": "=https://api.telegram.org/file/bot[you're token]/{{ $json.result.file_path }}",
+        "options": {
+          "response": {
+            "response": {
+              "responseFormat": "file"
+            }
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1376,
+        128
+      ],
+      "id": "f0e54c04-71ee-4f1f-94a5-4cc6f8b694e4",
+      "name": "convert_thumnail"
+    },
+    {
+      "parameters": {
+        "url": "=https://api.telegram.org/file/bot[you're token]/{{ $json.result.file_path }}",
+        "options": {
+          "response": {
+            "response": {
+              "responseFormat": "file"
+            }
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1120,
+        592
+      ],
+      "id": "cb29a134-868b-40d3-acea-126192b890b4",
+      "name": "convert_body"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://www.googleapis.com/blogger/v3/blogs/[you're id blogger]/posts",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "oAuth2Api",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "kind",
+              "value": "blogger#post"
+            },
+            {
+              "name": "blog.id",
+              "value": "[you're id blogger]"
+            },
+            {
+              "name": "title",
+              "value": "={{ $json.article_title }}"
+            },
+            {
+              "name": "content",
+              "value": "=<img src='{{ $('Code').item.json.thumbnail_image_url }}' alt='Thumbnail' style='max-width:100%;height:auto;'><br>{{ $json.article_content }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        2608,
+        -32
+      ],
+      "id": "f42f78bd-cc52-4c4e-81db-8ab18a4f8dcc",
+      "name": "HTTP Request",
+      "credentials": {
+        "oAuth2Api": {
+          "id": "XOjqzkLPGYzOeDkP",
+          "name": "blogger for upload image body"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Telegram Trigger').item.json.message.chat.id }}",
+        "text": "=✅ Artikel berhasil dipublish!  \n\n📝 Judul: {{ $('If1').item.json.article_title }}\n🔗 Link: {{ $json.url }}\n📅 Tanggal: {{ $now.setLocale('id').format('cccc, dd MMMM yyyy, HH:mm') }}",
+        "additionalFields": {
+          "appendAttribution": false,
+          "parse_mode": "HTML"
+        }
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        2832,
+        16
+      ],
+      "id": "1effff39-86c6-47e9-900c-102021b75603",
+      "name": "Send a text message",
+      "webhookId": "f7d13926-8b52-4007-ad27-84f1fb1c4393",
+      "credentials": {
+        "telegramApi": {
+          "id": "U3ezr80AdwRyTJzR",
+          "name": "ini atmin"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "3abd63ac-f04a-43db-9392-fc2ae5a8ff05",
+              "leftValue": "={{ $json.article_content }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "exists",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        2368,
+        128
+      ],
+      "id": "af8427a2-9cf7-4eef-9107-67289ae9e948",
+      "name": "If1"
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Telegram Trigger').item.json.message.chat.id }}",
+        "text": "=😅 Maaf ya, sebelum kamu **unggah thumbnail**, kita mulai dulu dengan **bikin prompt atau tema artikelnya** dulu ya 😊\n👉 *Ingat*, **maksimal 1 gambar saja** untuk thumbnail nanti, ya!\n\nKamu bisa kasih ide seperti:\n💻 **Teknologi terkini**\n🏝️ **Gaya hidup sehat**\n📈 **Tips produktivitas**\n...atau **topik lain** yang kamu suka!\n\n🖼️ Setelah **artikelnya selesai dibuat**, baru deh lanjut **upload gambar thumbnail**-nya.\n✨ Yuk, **share idemu dulu**",
+        "additionalFields": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        2656,
+        176
+      ],
+      "id": "d51543c5-e6ab-4d1c-aa7f-c4eaad507ab0",
+      "name": "Send a text message1",
+      "webhookId": "0242428e-a42c-46c3-8a19-3463f1cec65e",
+      "credentials": {
+        "telegramApi": {
+          "id": "U3ezr80AdwRyTJzR",
+          "name": "ini atmin"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "3abd63ac-f04a-43db-9392-fc2ae5a8ff05",
+              "leftValue": "={{ $json.body_img_url }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "empty",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        320,
+        992
+      ],
+      "id": "ba69daa7-d575-4829-aa93-226591798cfd",
+      "name": "If2"
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Telegram Trigger').item.json.message.chat.id }}",
+        "text": "=😅 Maaf ya, sebelum kamu kirim **prompt artikel**, unggah dulu **foto body image**-nya ya.\n🖼️ *Maksimal 1 gambar saja*, dan jangan lupa kasih **caption body** yang sesuai.\n\nSetelah itu, baru deh kita lanjut bikin **artikelnya** dari prompt kamu!\n✨ Yuk, **upload gambar body**-nya dulu\\~",
+        "additionalFields": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        544,
+        1088
+      ],
+      "id": "431835f0-2e89-46dd-bf70-306cfc09f3a8",
+      "name": "Send a text message2",
+      "webhookId": "123bc504-aa4b-4134-a86d-62f2acfd1a94",
+      "credentials": {
+        "telegramApi": {
+          "id": "U3ezr80AdwRyTJzR",
+          "name": "ini atmin"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Telegram Trigger').item.json.message.chat.id }}",
+        "text": "=👋 **Hai!** Buat kamu yang mau mulai bikin artikel otomatis di WordPress lewat bot ini, berikut langkah-langkahnya ya:\n\n1️⃣ **Kirim gambar untuk body content**\n🖼️ *Maksimal 1 gambar aja*, dan **kasih caption** dengan teks: `body` (wajib huruf kecil semua)\n\n2️⃣ **Tulis prompt artikelnya**\n📝 Bebas pilih tema apa aja — teknologi, lifestyle, edukasi, dll.\n\n3️⃣ **Kirim gambar thumbnail**\n🖼️ *Maksimal 1 gambar juga*, dan **kasih caption**: `thumbnail` (wajib huruf kecil semua)\n\n⚠️ **Penting:**\n✅ Caption **harus persis**: `body` dan `thumbnail`\n🚫 Tidak boleh salah ketik atau variasi huruf seperti `BOdy`, `Thumbail`, `tHumbnail`, dll — karena sistem gak akan bisa memproses kalau tidak sesuai.\n\n✨ Yuk, mulai dari upload gambar *body*-nya dulu!",
+        "additionalFields": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        96,
+        1184
+      ],
+      "id": "b4e55980-0b0b-4c43-a5b6-d9cef00185b8",
+      "name": "Send a text message3",
+      "webhookId": "e15ef122-cc9b-4cb1-89ea-16bf17eb8b5c",
+      "credentials": {
+        "telegramApi": {
+          "id": "U3ezr80AdwRyTJzR",
+          "name": "ini atmin"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "1998d9e3-7584-4388-a456-ec031f5981c1",
+              "leftValue": "={{ $json.message.caption }}",
+              "rightValue": "body",
+              "operator": {
+                "type": "string",
+                "operation": "notEquals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        432,
+        464
+      ],
+      "id": "8cdfa738-37b9-4b77-b507-f40f72a13245",
+      "name": "If3"
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Telegram Trigger').item.json.message.chat.id }}",
+        "text": "=✅ Caption harus persis: body \n\nNote: kalo body sudah abaikan pesan ini",
+        "additionalFields": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        816,
+        400
+      ],
+      "id": "4519be60-8951-4889-a12c-b4ea2508d1c2",
+      "name": "Send a text message6",
+      "webhookId": "bfe73a7d-b327-41b7-8f9b-de4e6959a4eb",
+      "credentials": {
+        "telegramApi": {
+          "id": "U3ezr80AdwRyTJzR",
+          "name": "ini atmin"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Telegram Trigger').item.json.message.chat.id }}",
+        "text": "=🖼️ *Maksimal 1 gambar juga*, dan **kasih caption**: `thumbnail atau body` (wajib huruf kecil semua)",
+        "additionalFields": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        96,
+        1376
+      ],
+      "id": "76cd53f5-5ebb-47c1-98ae-cc64ec2d13a6",
+      "name": "Send a text message5",
+      "webhookId": "b20f99d2-695c-4cb7-9de8-4be5f38f9641",
+      "credentials": {
+        "telegramApi": {
+          "id": "U3ezr80AdwRyTJzR",
+          "name": "ini atmin"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "3abd63ac-f04a-43db-9392-fc2ae5a8ff05",
+              "leftValue": "={{ $('Get row(s) in sheet1').item.json.article_content }}",
+              "rightValue": "={{ \"\" }}",
+              "operator": {
+                "type": "string",
+                "operation": "empty",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        544,
+        128
+      ],
+      "id": "59f39c59-cb9f-46b3-9be5-fd21a5d669df",
+      "name": "If4"
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Telegram Trigger').item.json.message.chat.id }}",
+        "text": "=✅ Tulis Prompt artikelnya dulu",
+        "additionalFields": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        864,
+        16
+      ],
+      "id": "52139271-4a82-425b-82f2-2e77eb2be39b",
+      "name": "Send a text message7",
+      "webhookId": "f989f9a7-4131-4dfe-89a0-5620440a93de",
+      "credentials": {
+        "telegramApi": {
+          "id": "U3ezr80AdwRyTJzR",
+          "name": "ini atmin"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Telegram Trigger').item.json.message.chat.id }}",
+        "text": "=✅ Post Img body berhasil,\n\nLanjut bikin prompt",
+        "additionalFields": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        2384,
+        496
+      ],
+      "id": "6f712e4e-750f-46e4-b377-dc67970e9472",
+      "name": "Send a text message8",
+      "webhookId": "b6ce1d82-5b0a-4caa-9f2d-b899304a0c09",
+      "credentials": {
+        "telegramApi": {
+          "id": "U3ezr80AdwRyTJzR",
+          "name": "ini atmin"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Telegram Trigger').item.json.message.chat.id }}",
+        "text": "=✅ Post content hasil prompt berhasil\n\nLanjut Upload thumbnail img",
+        "additionalFields": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        1616,
+        896
+      ],
+      "id": "c289edfb-21ac-4d9e-99a8-42243744cdad",
+      "name": "Send a text message9",
+      "webhookId": "7c22ff27-eb85-4830-9cd2-35ea7e160a1e",
+      "credentials": {
+        "telegramApi": {
+          "id": "U3ezr80AdwRyTJzR",
+          "name": "ini atmin"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Telegram Trigger').item.json.message.chat.id }}",
+        "text": "=⏳ Tunggu beberapa detik...",
+        "additionalFields": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        544,
+        896
+      ],
+      "id": "7a04cd7b-d3fa-4486-8749-3aadf1b59411",
+      "name": "Send a text message4",
+      "webhookId": "e60891dc-0e0d-4305-bcd8-1905f614a497",
+      "credentials": {
+        "telegramApi": {
+          "id": "U3ezr80AdwRyTJzR",
+          "name": "ini atmin"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Telegram Trigger').item.json.message.chat.id }}",
+        "text": "=⏳ Tunggu beberapa detik...",
+        "additionalFields": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        592,
+        592
+      ],
+      "id": "eeb69141-47ca-40c3-a11c-491b28ce839a",
+      "name": "Send a text message10",
+      "webhookId": "5d4cd524-f572-4521-89e6-931c242b8cf1",
+      "credentials": {
+        "telegramApi": {
+          "id": "U3ezr80AdwRyTJzR",
+          "name": "ini atmin"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Telegram Trigger').item.json.message.chat.id }}",
+        "text": "=⏳ Tunggu beberapa detik...",
+        "additionalFields": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        864,
+        176
+      ],
+      "id": "febbd547-747b-4437-b3b1-6e64188af683",
+      "name": "Send a text message11",
+      "webhookId": "15c9f812-ec3c-4c1d-8026-3a31c2941af5",
+      "credentials": {
+        "telegramApi": {
+          "id": "U3ezr80AdwRyTJzR",
+          "name": "ini atmin"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1T_461b-gp0DbYwVzh3-tevhiczjzTFsT5FsKYePjWsc",
+          "mode": "list",
+          "cachedResultName": "wordpress",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1T_461b-gp0DbYwVzh3-tevhiczjzTFsT5FsKYePjWsc/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1T_461b-gp0DbYwVzh3-tevhiczjzTFsT5FsKYePjWsc/edit#gid=0"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.6,
+      "position": [
+        96,
+        992
+      ],
+      "id": "cfa863e2-e61e-4f7b-bbfd-d0b907ed256c",
+      "name": "Get row(s) in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "oL7J9eRuzmPSDfci",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentId": {
+          "__rl": true,
+          "value": "1T_461b-gp0DbYwVzh3-tevhiczjzTFsT5FsKYePjWsc",
+          "mode": "list",
+          "cachedResultName": "wordpress",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1T_461b-gp0DbYwVzh3-tevhiczjzTFsT5FsKYePjWsc/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1T_461b-gp0DbYwVzh3-tevhiczjzTFsT5FsKYePjWsc/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "id": "1",
+            "body_img_url": "={{ $('Code1').item.json.thumbnail_image_url }}"
+          },
+          "matchingColumns": [
+            "id"
+          ],
+          "schema": [
+            {
+              "id": "article_title",
+              "displayName": "article_title",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "article_content",
+              "displayName": "article_content",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "article_tags",
+              "displayName": "article_tags",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "body_img_url",
+              "displayName": "body_img_url",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "id",
+              "displayName": "id",
+              "required": false,
+              "defaultMatch": true,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "row_number",
+              "displayName": "row_number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "readOnly": true,
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.6,
+      "position": [
+        1984,
+        496
+      ],
+      "id": "7f894814-662c-41a0-9a9f-05c734233326",
+      "name": "Update row in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "oL7J9eRuzmPSDfci",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentId": {
+          "__rl": true,
+          "value": "1T_461b-gp0DbYwVzh3-tevhiczjzTFsT5FsKYePjWsc",
+          "mode": "list",
+          "cachedResultName": "wordpress",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1T_461b-gp0DbYwVzh3-tevhiczjzTFsT5FsKYePjWsc/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1T_461b-gp0DbYwVzh3-tevhiczjzTFsT5FsKYePjWsc/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "id": "1",
+            "article_title": "={{ $('Ekstrak Data Konten').item.json.article_title }}",
+            "article_content": "={{ $('Ekstrak Data Konten').item.json.article_content }}",
+            "article_tags": "={{ $('Ekstrak Data Konten').item.json.article_tags }}"
+          },
+          "matchingColumns": [
+            "id"
+          ],
+          "schema": [
+            {
+              "id": "article_title",
+              "displayName": "article_title",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "article_content",
+              "displayName": "article_content",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "article_tags",
+              "displayName": "article_tags",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "body_img_url",
+              "displayName": "body_img_url",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "id",
+              "displayName": "id",
+              "required": false,
+              "defaultMatch": true,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "row_number",
+              "displayName": "row_number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "readOnly": true,
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.6,
+      "position": [
+        1392,
+        896
+      ],
+      "id": "be4a065e-c5c6-45d7-bd9a-6f2255e676d5",
+      "name": "Update row in sheet1",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "oL7J9eRuzmPSDfci",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1T_461b-gp0DbYwVzh3-tevhiczjzTFsT5FsKYePjWsc",
+          "mode": "list",
+          "cachedResultName": "wordpress",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1T_461b-gp0DbYwVzh3-tevhiczjzTFsT5FsKYePjWsc/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1T_461b-gp0DbYwVzh3-tevhiczjzTFsT5FsKYePjWsc/edit#gid=0"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.6,
+      "position": [
+        320,
+        112
+      ],
+      "id": "a80b3adc-0d7a-4342-8fc8-df960c4a7acf",
+      "name": "Get row(s) in sheet1",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "oL7J9eRuzmPSDfci",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1T_461b-gp0DbYwVzh3-tevhiczjzTFsT5FsKYePjWsc",
+          "mode": "list",
+          "cachedResultName": "wordpress",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1T_461b-gp0DbYwVzh3-tevhiczjzTFsT5FsKYePjWsc/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1T_461b-gp0DbYwVzh3-tevhiczjzTFsT5FsKYePjWsc/edit#gid=0"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.6,
+      "position": [
+        2048,
+        128
+      ],
+      "id": "ec483376-3da2-470f-96aa-6537d4472f27",
+      "name": "Get row(s) in sheet2",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "oL7J9eRuzmPSDfci",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentId": {
+          "__rl": true,
+          "value": "1T_461b-gp0DbYwVzh3-tevhiczjzTFsT5FsKYePjWsc",
+          "mode": "list",
+          "cachedResultName": "wordpress",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1T_461b-gp0DbYwVzh3-tevhiczjzTFsT5FsKYePjWsc/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1T_461b-gp0DbYwVzh3-tevhiczjzTFsT5FsKYePjWsc/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "id": "1",
+            "article_title": "={{ \"\" }}",
+            "article_content": "={{ \"\" }}",
+            "article_tags": "={{ \"\" }}",
+            "body_img_url": "={{ \"\" }}"
+          },
+          "matchingColumns": [
+            "id"
+          ],
+          "schema": [
+            {
+              "id": "article_title",
+              "displayName": "article_title",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "article_content",
+              "displayName": "article_content",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "article_tags",
+              "displayName": "article_tags",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "body_img_url",
+              "displayName": "body_img_url",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "id",
+              "displayName": "id",
+              "required": false,
+              "defaultMatch": true,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "row_number",
+              "displayName": "row_number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "readOnly": true,
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.6,
+      "position": [
+        3136,
+        16
+      ],
+      "id": "de56ab14-5c49-4e9b-b93a-e615490fc749",
+      "name": "Update row in sheet2",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "oL7J9eRuzmPSDfci",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "# Flow Prompt Artikel\n**Double click** to edit me. [Guide](https://docs.n8n.io/workflows/sticky-notes/)",
+        "height": 736,
+        "width": 1808
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        64,
+        800
+      ],
+      "typeVersion": 1,
+      "id": "35d23994-444d-4912-a6e4-3ba26bbdf6f1",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "content": "# Flow Thumbnail Imagew\n**Double click** to edit me. [Guide](https://docs.n8n.io/workflows/sticky-notes/)",
+        "height": 400,
+        "width": 3200,
+        "color": 3
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        224,
+        -64
+      ],
+      "typeVersion": 1,
+      "id": "63ef6b23-d7c9-4d9d-bb24-8441b146b8f9",
+      "name": "Sticky Note1"
+    },
+    {
+      "parameters": {
+        "content": "# Flow Body Image\n**Double click** to edit me. [Guide](https://docs.n8n.io/workflows/sticky-notes/)",
+        "height": 384,
+        "width": 2192,
+        "color": 4
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        368,
+        368
+      ],
+      "typeVersion": 1,
+      "id": "324376e8-e89e-42d0-b9e1-de0f862c5006",
+      "name": "Sticky Note2"
+    },
+    {
+      "parameters": {
+        "name": "body",
+        "driveId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "My Drive"
+        },
+        "folderId": {
+          "__rl": true,
+          "value": "1aK4pK0hvYDs8dYaoebIFBlZmXUGXLtrJ",
+          "mode": "list",
+          "cachedResultName": "blogger",
+          "cachedResultUrl": "https://drive.google.com/drive/folders/1aK4pK0hvYDs8dYaoebIFBlZmXUGXLtrJ"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        1408,
+        528
+      ],
+      "id": "6cec620b-72b8-4c0e-b44b-18042bc50014",
+      "name": "Upload file",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "dAg5tNAy6b5OJWHI",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "name": "thumbnail",
+        "driveId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "My Drive"
+        },
+        "folderId": {
+          "__rl": true,
+          "value": "1aK4pK0hvYDs8dYaoebIFBlZmXUGXLtrJ",
+          "mode": "list",
+          "cachedResultName": "blogger",
+          "cachedResultUrl": "https://drive.google.com/drive/folders/1aK4pK0hvYDs8dYaoebIFBlZmXUGXLtrJ"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        1616,
+        144
+      ],
+      "id": "ac22591b-8a4d-4170-a276-bf9409e8fb63",
+      "name": "Upload file1",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "dAg5tNAy6b5OJWHI",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const thumbnailUrl = $input.first().json.thumbnailLink\n\n// Menghapus =s220 dari URL thumbnail jika ada\nconst cleanedThumbnailUrl = thumbnailUrl.replace(/=s\\d+$/, '');\n\nreturn [{\n  json: {\n    thumbnail_image_url: cleanedThumbnailUrl\n  }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1824,
+        144
+      ],
+      "id": "98c9c9e1-729b-4f60-bb9b-a4649b537db1",
+      "name": "Code"
+    },
+    {
+      "parameters": {
+        "jsCode": "const thumbnailUrl = $input.first().json.thumbnailLink\n\n// Menghapus =s220 dari URL thumbnail jika ada\nconst cleanedThumbnailUrl = thumbnailUrl.replace(/=s\\d+$/, '');\n\nreturn [{\n  json: {\n    thumbnail_image_url: cleanedThumbnailUrl\n  }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1712,
+        528
+      ],
+      "id": "9c11b343-f534-4d5a-8368-4af12628a3ce",
+      "name": "Code1"
+    }
+  ],
+  "pinData": {
+    "Telegram Trigger": [
+      {
+        "json": {
+          "update_id": 867151342,
+          "message": {
+            "message_id": 1404,
+            "from": {
+              "id": 7944966191,
+              "is_bot": false,
+              "first_name": "Aji",
+              "last_name": "Maulana",
+              "language_code": "en"
+            },
+            "chat": {
+              "id": 7944966191,
+              "first_name": "Aji",
+              "last_name": "Maulana",
+              "type": "private"
+            },
+            "date": 1755334368,
+            "photo": [
+              {
+                "file_id": "AgACAgUAAxkBAAIFdmigRoxwX03m7i7W33NPtePE9DBXAAI2xzEbZdwBVSDkXstVVhZMAQADAgADcwADNgQ",
+                "file_unique_id": "AQADNscxG2XcAVV4",
+                "file_size": 1501,
+                "width": 90,
+                "height": 51
+              },
+              {
+                "file_id": "AgACAgUAAxkBAAIFdmigRoxwX03m7i7W33NPtePE9DBXAAI2xzEbZdwBVSDkXstVVhZMAQADAgADbQADNgQ",
+                "file_unique_id": "AQADNscxG2XcAVVy",
+                "file_size": 23162,
+                "width": 320,
+                "height": 180
+              },
+              {
+                "file_id": "AgACAgUAAxkBAAIFdmigRoxwX03m7i7W33NPtePE9DBXAAI2xzEbZdwBVSDkXstVVhZMAQADAgADeAADNgQ",
+                "file_unique_id": "AQADNscxG2XcAVV9",
+                "file_size": 78346,
+                "width": 632,
+                "height": 356
+              }
+            ],
+            "caption": "thumbnail"
+          }
+        }
+      }
+    ]
+  },
+  "connections": {
+    "Telegram Trigger": {
+      "main": [
+        [
+          {
+            "node": "Switch",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Ekstrak Data Konten",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Ekstrak Data Konten": {
+      "main": [
+        [
+          {
+            "node": "Update row in sheet1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Switch": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Send a text message3",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Get row(s) in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Send a text message5",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "Get row(s) in sheet1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "If3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "thumnail_req": {
+      "main": [
+        [
+          {
+            "node": "convert_thumnail",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "convert_thumnail": {
+      "main": [
+        [
+          {
+            "node": "Upload file1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "body_req": {
+      "main": [
+        [
+          {
+            "node": "convert_body",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "convert_body": {
+      "main": [
+        [
+          {
+            "node": "Upload file",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request": {
+      "main": [
+        [
+          {
+            "node": "Send a text message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send a text message": {
+      "main": [
+        [
+          {
+            "node": "Update row in sheet2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If1": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Send a text message1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If2": {
+      "main": [
+        [
+          {
+            "node": "Send a text message2",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Send a text message4",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If3": {
+      "main": [
+        [
+          {
+            "node": "Send a text message6",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Send a text message10",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If4": {
+      "main": [
+        [
+          {
+            "node": "Send a text message7",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Send a text message11",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send a text message4": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send a text message10": {
+      "main": [
+        [
+          {
+            "node": "body_req",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send a text message11": {
+      "main": [
+        [
+          {
+            "node": "thumnail_req",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get row(s) in sheet": {
+      "main": [
+        [
+          {
+            "node": "If2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update row in sheet": {
+      "main": [
+        [
+          {
+            "node": "Send a text message8",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update row in sheet1": {
+      "main": [
+        [
+          {
+            "node": "Send a text message9",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get row(s) in sheet1": {
+      "main": [
+        [
+          {
+            "node": "If4",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get row(s) in sheet2": {
+      "main": [
+        [
+          {
+            "node": "If1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Upload file": {
+      "main": [
+        [
+          {
+            "node": "Code1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Upload file1": {
+      "main": [
+        [
+          {
+            "node": "Code",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code": {
+      "main": [
+        [
+          {
+            "node": "Get row(s) in sheet2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code1": {
+      "main": [
+        [
+          {
+            "node": "Update row in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "a74f9f94-f656-4743-95ce-403f65ee44d4",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "fb0d9bcd56ab9f68e0774f6b5852decdeace7ad2ff873fbed50a79eda6f3ea79"
+  },
+  "id": "2ZJNB4m3wTKbYD3P",
+  "tags": [
+    {
+      "createdAt": "2025-08-15T09:38:31.415Z",
+      "updatedAt": "2025-08-15T09:38:31.415Z",
+      "id": "cAbH2dhhcvyUGKi9",
+      "name": "otomatiasai-wordpress"
+    }
+  ]
+}

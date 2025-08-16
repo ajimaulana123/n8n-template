@@ -1,0 +1,260 @@
+{
+  "name": "screenshoot-firecrawl",
+  "nodes": [
+    {
+      "parameters": {
+        "toolDescription": "Used to perform web searches and optionally retrieve content from the results.",
+        "method": "POST",
+        "url": "https://api.firecrawl.dev/v1/search",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"query\": \"Carikan saya artikel di Forbes yang menyertakan kata kecerdasan buatan dalam judulnya, tetapi tidak menyertakan kata agen.\",\n  \"limit\": 2,\n  \"scrapeOptions\": {\n      \"formats\": [\"html\", \"screenshot\"]\n    }\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequestTool",
+      "typeVersion": 4.2,
+      "position": [
+        272,
+        144
+      ],
+      "id": "770ec6cb-13e4-4ec4-9981-acb30e540341",
+      "name": "crawl",
+      "credentials": {
+        "httpBearerAuth": {
+          "id": "TzHb76Nw1oKHVdBW",
+          "name": "Bearer Auth account 2"
+        },
+        "httpHeaderAuth": {
+          "id": "RmT45HgLrF64nsYq",
+          "name": "Firecrawl MCP Server"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "models/gemini-2.5-flash",
+          "mode": "list",
+          "cachedResultName": "models/gemini-2.5-flash"
+        },
+        "messages": {
+          "values": [
+            {
+              "content": "={{ $('Telegram Trigger').item.json.message.text }}"
+            },
+            {
+              "content": "=# Ringkasan\n\nAnda adalah Agen Generator Kueri Penelusuran Firecrawl.\n\nAnda memiliki akses ke alat yang disebut FireCrawl Search.\n\nSAYA\n\nTugas Anda adalah:\n\n1. Ubah instruksi bahasa alami menjadi string kueri Firecrawl yang diformat dengan benar menggunakan operator yang didukung.\n\n2. Kirimkan kueri tersebut beserta parameter 'limit' ke alat **FireCrawl Search**.\n\n## Aturan Konstruksi Kueri:\n\nGunakan aturan berikut untuk mengubah masukan pengguna:\n\nJika pengguna menentukan frasa yang tepat\n\n→ 'Nate Herk\n\nUntuk mengecualikan istilah atau domain, awali dengan →'-linkedin', '-site:facebook.com'\n\nJika pengguna ingin mencari dalam situs tertentu, gunakan 'site:`\n\n→'situs:youtube.com\n\n- Jika pengguna menginginkan kata di URL, gunakan inurl:` → `inurl:nateherk\n\nJika pengguna menginginkan beberapa kata di URL, gunakan 'allinurl:`\n\n→ 'allinurl: agen herk nate'\n\nJika pengguna menginginkan sebuah kata dalam judul halaman, gunakan 'intitle:` →'intitle:automation\n\nJika pengguna menginginkan beberapa kata dalam judul, gunakan 'allintitle:`\n\n→ 'allintitle:ai agent tutorial\n\nJika pengguna menginginkan hasil yang terkait dengan domain, gunakan 'related:`\n\n→ 'related: truehorizonai.com\n\n## Petunjuk Penggunaan Alat:\n\nSelalu panggil alat **FireCrawls Search** dengan:\n\n`query: string kueri yang dibangun terakhir\n\n'batas': jumlah hasil yang diminta pengguna\n\nJika pengguna tidak menentukan batas**, defaultnya adalah:\n\n→`batas: 5`\n\n## Contoh:\n\n**Input:** Cari Nate Herk di internet\n\n**Tindakan:** Panggil FireCrawls Cari dengan:\n\njson```\n{\n  \"pertanyaan\": Nate Herk,\n  \"batas\": 5\n}\n```\n\n**Input:** Temukan halaman dengan agen AI di judul dari YouTube, tunjukkan padaku 10\n\n**Tindakan:**\n\njson```\n{\n  \"kueri\": judul:situs agen AI:youtube.com,\n  \"batas\": 10\n} \n```\n\n**Input:** Tunjukkan hasil yang menyebutkan Nate Herk tetapi tidak menyertakan LinkedIn\n\n**Tindakan:**\n\njson```\n{\n  \"kueri\": Nate Herk -situs:linkedin.com,\n  \"batas\": 5\n}\n```\n\nKemudian rangkum daftar artikel dari input teks dan mengubahnya menjadi daftar dalam format Markdown yang rapi.\n\nIkuti langkah-langkah berikut:\n\n1. Identifikasi setiap artikel yang disebutkan dalam input teks.\n2. Untuk setiap artikel, ambil elemen berikut:\n   - **judul**: Judul artikel lengkap.\n   - **sumber**: Nama situs atau penerbit artikel.\n   - **ringkasan**: Ringkasan utama dari isi artikel (maksimal 2 kalimat).\n   - **url_gambar**: Jika disebutkan atau bisa dikenali dari konteks, masukkan URL gambar yang relevan. Jika tidak ada, tulis `Gambar tidak tersedia`.\n\n3. Tampilkan hasilnya dalam format Markdown berikut:\n\n---\n\n## 📰 Daftar Artikel AI\n\n### 1. **[Judul artikel](#)**  \n**Sumber**: Nama sumber  \n📌 *Ringkasan*: Ringkasan isi artikel maksimal 2 kalimat.  \n🖼️ ![Gambar Artikel](https://contoh.com/gambar.jpg)\n\n---\n\n*Ulangi format tersebut untuk setiap artikel yang ditemukan.*\n\n### ⚠️ Catatan:\n- Jika tidak ada gambar, tampilkan `🖼️ Gambar tidak tersedia`.\n- Output **hanya berupa Markdown**, tanpa penjelasan tambahan di luar daftar artikel.\n\n"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.googleGemini",
+      "typeVersion": 1,
+      "position": [
+        176,
+        -80
+      ],
+      "id": "49b0345b-0954-4a04-8d5d-94ebfa52bdca",
+      "name": "Message a model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "rgCFGmvxho3k7i8c",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "updates": [
+          "message"
+        ],
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegramTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        -272,
+        -80
+      ],
+      "id": "95210a55-5449-484a-9ff6-1cc01c37074a",
+      "name": "Telegram Trigger",
+      "webhookId": "7a82446b-73bc-4cce-a41b-c972f522ce1e",
+      "credentials": {
+        "telegramApi": {
+          "id": "4xaLH1LyrvI7VjWf",
+          "name": "Telegram account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $json.message.chat.id }}",
+        "text": "👀⏳🥱 Tumnggu Sebemtar..",
+        "additionalFields": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        -48,
+        -80
+      ],
+      "id": "40a28ac7-8e30-40ba-a8d9-12c7e194fc3d",
+      "name": "Send a text message",
+      "webhookId": "171007bb-0658-4684-9457-3e52d6c1d040",
+      "credentials": {
+        "telegramApi": {
+          "id": "4xaLH1LyrvI7VjWf",
+          "name": "Telegram account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "url": "={{ $json.url_gambar }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        800,
+        -80
+      ],
+      "id": "a13b5a80-3cc3-43bd-98c9-f2839b624677",
+      "name": "HTTP Request"
+    },
+    {
+      "parameters": {
+        "operation": "sendPhoto",
+        "chatId": "={{ $('Telegram Trigger').item.json.message.chat.id }}",
+        "binaryData": true,
+        "additionalFields": {
+          "caption": "={{ $('Message a model').item.json.content.parts[0].text }}",
+          "parse_mode": "Markdown"
+        }
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        1024,
+        -80
+      ],
+      "id": "5a49d226-a0c6-4b7c-a719-1a7f00655b67",
+      "name": "Send a photo message",
+      "webhookId": "161a64f7-6c8c-4d7c-8b3c-d7e5a501735f",
+      "credentials": {
+        "telegramApi": {
+          "id": "4xaLH1LyrvI7VjWf",
+          "name": "Telegram account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// Ambil markdown dari input, misalnya dari field body atau text\nconst markdown = $input.first().json.content.parts[0].text\n\n// Ekstrak semua URL gambar dari ![Gambar Artikel](...) menggunakan regex\nconst regex = /!\\[.*?\\]\\((https?:\\/\\/[^\\s)]+)\\)/g;\n\nlet matches;\nconst imageUrls = [];\n\nwhile ((matches = regex.exec(markdown)) !== null) {\n  imageUrls.push(matches[1]); // Push hanya URL-nya\n}\n\n// Format output agar bisa digunakan di node selanjutnya\nreturn imageUrls.map(url => ({\n  json: { url_gambar: url }\n}));\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        576,
+        -80
+      ],
+      "id": "ba85bd70-7356-4d0a-81a5-cb865fc7ee36",
+      "name": "Code"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "crawl": {
+      "ai_tool": [
+        [
+          {
+            "node": "Message a model",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Telegram Trigger": {
+      "main": [
+        [
+          {
+            "node": "Send a text message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send a text message": {
+      "main": [
+        [
+          {
+            "node": "Message a model",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Message a model": {
+      "main": [
+        [
+          {
+            "node": "Code",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request": {
+      "main": [
+        [
+          {
+            "node": "Send a photo message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "730eb87e-e391-4293-a720-2a95e92640c2",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "c945aac5f1944774075768dbf5adb52793f8c9b3c47073412015df853e90aab4"
+  },
+  "id": "tXLCAvnMF5UjTl3P",
+  "tags": []
+}

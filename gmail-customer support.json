@@ -1,0 +1,244 @@
+{
+  "name": "screenshoot",
+  "nodes": [
+    {
+      "parameters": {
+        "inputText": "={{ $json.text }}",
+        "categories": {
+          "categories": [
+            {
+              "category": "customer service",
+              "description": " An email that is related to helping out a customer. They may be asking questions about our policies or questions about our products or services."
+            },
+            {
+              "category": "other",
+              "description": "any email customer support releated"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.textClassifier",
+      "typeVersion": 1.1,
+      "position": [
+        -560,
+        -80
+      ],
+      "id": "1c704950-7e64-48e1-a059-4caf396e83b5",
+      "name": "Text Classifier"
+    },
+    {
+      "parameters": {
+        "modelName": "models/gemini-2.5-pro",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        -592,
+        128
+      ],
+      "id": "6d2fb6a1-26a3-490e-b53c-bb12355d533d",
+      "name": "Google Gemini Chat Model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "znT1aHkmDPfPgWzr",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        -176,
+        192
+      ],
+      "id": "143a8358-4141-4a4e-86b5-1fc8544bb8a7",
+      "name": "No Operation, do nothing"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.text }}",
+        "options": {
+          "systemMessage": "=# Overview\nYou are a customer support agent for Tech Haven. Your job is to respond to incoming emails with relevant information using your knowledgeBase tool.\n\n## Instructions\n- Your output should be friendly and use emojis\n- Sign off as Mr. Helpful from Tech Haven Solutions\n\n## Output\n- Output only the body content of the email"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2.1,
+      "position": [
+        -176,
+        -208
+      ],
+      "id": "0a29e96b-e1a5-48fd-8cab-891d85ad14d1",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        -160,
+        16
+      ],
+      "id": "dae9b6a7-432c-47b0-af36-35fd79f2e54f",
+      "name": "Google Gemini Chat Model1",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "znT1aHkmDPfPgWzr",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "reply",
+        "messageId": "={{ $('gmail').item.json.id }}",
+        "message": "={{ $('AI Agent').item.json.output }}",
+        "options": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        640,
+        -240
+      ],
+      "id": "f3096a31-5c17-42b5-94e6-4547fd13e53d",
+      "name": "Reply to a message",
+      "webhookId": "efe1fd30-c157-47d6-b755-3c727c9753c1"
+    },
+    {
+      "parameters": {
+        "operation": "addLabels",
+        "messageId": "={{ $('gmail').item.json.id }}",
+        "labelIds": [
+          "IMPORTANT"
+        ]
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        272,
+        -240
+      ],
+      "id": "76c2bc4a-adcf-4d05-a831-62e76423e8e9",
+      "name": "Add label to message",
+      "webhookId": "fd2c09e7-b3ec-474d-a0d1-815a1cb56b43"
+    },
+    {
+      "parameters": {
+        "pollTimes": {
+          "item": [
+            {
+              "mode": "everyMinute"
+            }
+          ]
+        },
+        "simple": false,
+        "filters": {},
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmailTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        -768,
+        -80
+      ],
+      "id": "32fd74d5-0e1a-4983-b0f2-1e050f5fe5a0",
+      "name": "gmail"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Text Classifier",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Text Classifier": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "No Operation, do nothing",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model1": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Add label to message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Add label to message": {
+      "main": [
+        [
+          {
+            "node": "Reply to a message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "gmail": {
+      "main": [
+        [
+          {
+            "node": "Text Classifier",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "69657bc5-d3d7-462b-814f-c22bd0ac3b4e",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "fb0d9bcd56ab9f68e0774f6b5852decdeace7ad2ff873fbed50a79eda6f3ea79"
+  },
+  "id": "E5WistYbBLhlVrdo",
+  "tags": []
+}

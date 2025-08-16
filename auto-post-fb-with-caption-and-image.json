@@ -1,0 +1,324 @@
+{
+  "name": "screenshoot",
+  "nodes": [
+    {
+      "parameters": {
+        "updates": [
+          "message"
+        ],
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegramTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        -960,
+        144
+      ],
+      "id": "4bafd6de-7c31-4f1d-a94d-2d4289f9d0c3",
+      "name": "user massage",
+      "webhookId": "ae3a0155-043b-4323-97c3-a3cb553c1da4",
+      "credentials": {
+        "telegramApi": {
+          "id": "U3ezr80AdwRyTJzR",
+          "name": "ini atmin"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "a33209c1-5bcf-44a7-b3fc-557df9654063",
+              "leftValue": "={{ $('user massage').item.json.message.text }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "exists",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -736,
+        144
+      ],
+      "id": "30a0a700-7f02-4331-bf43-42786e24908f",
+      "name": "Is Caption Image?"
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentId": {
+          "__rl": true,
+          "value": "1deWV6unpXsU0c_kEf8QczTKj6VlEIbENfZ7CCZUrl3c",
+          "mode": "list",
+          "cachedResultName": "auto-post-description",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1deWV6unpXsU0c_kEf8QczTKj6VlEIbENfZ7CCZUrl3c/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1deWV6unpXsU0c_kEf8QczTKj6VlEIbENfZ7CCZUrl3c/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "id": "1",
+            "description": "={{ $('user massage').item.json.message.text }}"
+          },
+          "matchingColumns": [
+            "id"
+          ],
+          "schema": [
+            {
+              "id": "id",
+              "displayName": "id",
+              "required": false,
+              "defaultMatch": true,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "description",
+              "displayName": "description",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "row_number",
+              "displayName": "row_number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "readOnly": true,
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.6,
+      "position": [
+        -512,
+        32
+      ],
+      "id": "b2be70cc-3292-4dff-8ce3-acd4ce925ec5",
+      "name": "Save image analysis results",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "oL7J9eRuzmPSDfci",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "httpRequestMethod": "POST",
+        "graphApiVersion": "v22.0",
+        "node": "me",
+        "edge": "photos",
+        "sendBinaryData": true,
+        "binaryPropertyName": "data",
+        "options": {
+          "queryParameters": {
+            "parameter": [
+              {
+                "name": "message",
+                "value": "={{ $('Get  image analysis results').item.json.description }}"
+              },
+              {
+                "name": "published",
+                "value": "false"
+              }
+            ]
+          }
+        }
+      },
+      "type": "n8n-nodes-base.facebookGraphApi",
+      "typeVersion": 1,
+      "position": [
+        160,
+        240
+      ],
+      "id": "8a5acce1-3057-4fb8-8ac2-8e6e4a1d222c",
+      "name": "Post to fb"
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1deWV6unpXsU0c_kEf8QczTKj6VlEIbENfZ7CCZUrl3c",
+          "mode": "list",
+          "cachedResultName": "auto-post-description",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1deWV6unpXsU0c_kEf8QczTKj6VlEIbENfZ7CCZUrl3c/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1deWV6unpXsU0c_kEf8QczTKj6VlEIbENfZ7CCZUrl3c/edit#gid=0"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.6,
+      "position": [
+        -512,
+        240
+      ],
+      "id": "1482c405-0890-4163-89fe-dcaabb726e8e",
+      "name": "Get  image analysis results",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "oL7J9eRuzmPSDfci",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "url": "=https://api.telegram.org/bot[You're telegram bot toke]/getFile",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "file_id",
+              "value": "={{ $('user massage').item.json.message.photo[$('user massage').item.json.message.photo.length -1 ].file_id }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -288,
+        240
+      ],
+      "id": "9f4ea9ae-76a0-4f77-a0d8-040540783da1",
+      "name": "Get Image's From Telegram2"
+    },
+    {
+      "parameters": {
+        "url": "=https://api.telegram.org/file/bot[You're telegram bot toke]/{{ $json.result.file_path }}",
+        "options": {
+          "response": {
+            "response": {
+              "responseFormat": "file"
+            }
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -64,
+        240
+      ],
+      "id": "1d8760a2-45f7-4cde-ac47-c1e2e2e792e7",
+      "name": "Convert image2"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "user massage": {
+      "main": [
+        [
+          {
+            "node": "Is Caption Image?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Is Caption Image?": {
+      "main": [
+        [
+          {
+            "node": "Save image analysis results",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Get  image analysis results",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get  image analysis results": {
+      "main": [
+        [
+          {
+            "node": "Get Image's From Telegram2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Image's From Telegram2": {
+      "main": [
+        [
+          {
+            "node": "Convert image2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Convert image2": {
+      "main": [
+        [
+          {
+            "node": "Post to fb",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "982ba9d4-7c9b-4e55-9d17-f1304ffee5da",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "fb0d9bcd56ab9f68e0774f6b5852decdeace7ad2ff873fbed50a79eda6f3ea79"
+  },
+  "id": "E5WistYbBLhlVrdo",
+  "tags": []
+}
