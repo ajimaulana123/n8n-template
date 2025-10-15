@@ -1,0 +1,1058 @@
+{
+  "name": "nodes template workflow",
+  "nodes": [
+    {
+      "parameters": {
+        "updates": [
+          "message",
+          "callback_query"
+        ],
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegramTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        -672,
+        288
+      ],
+      "id": "472481c5-6630-46ce-ace4-3c224c776702",
+      "name": "admin",
+      "webhookId": "c6874669-a19a-4fe4-aa37-004afe4e6f82",
+      "credentials": {
+        "telegramApi": {
+          "id": "hTGo4l6MBPW4yIQ5",
+          "name": "moon"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "248b27af-42fa-4cef-aa44-c2fdb3f42acc",
+                    "leftValue": "={{ $('parse route1').item.json.message }}",
+                    "rightValue": "=/start",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "/start"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "756818ef-96c7-4c57-ba6e-e1d109be5bc2",
+                    "leftValue": "={{ $('parse route1').item.json.message }}",
+                    "rightValue": "/create",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "=/create"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "87c9f887-ccaa-47a0-9851-3ea8e0f702fd",
+                    "leftValue": "={{ $('parse route1').item.json.message }}",
+                    "rightValue": "lpk",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "lpk"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "07c02660-096d-4f33-92ad-6d4897d10397",
+                    "leftValue": "={{ $('parse route1').item.json.message }}",
+                    "rightValue": "biaya",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "biaya"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "813434de-e572-44e9-9a2b-5c742c71ef36",
+                    "leftValue": "={{ $('parse route1').item.json.message }}",
+                    "rightValue": "job",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "job"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "2f19cfe4-e69f-4c5f-af3a-625b2a4f3c83",
+                    "leftValue": "={{ $('parse route1').item.json.message }}",
+                    "rightValue": "visa",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "visa"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "446c4f83-ade4-4241-976c-3f02d2508d0a",
+                    "leftValue": "={{ $('parse route1').item.json.message }}",
+                    "rightValue": "/token",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "/token"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "baf873bb-fe64-4aa8-8112-21fc92565538",
+                    "leftValue": "={{ $('parse route1').item.json.message }}",
+                    "rightValue": "/job-draft",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "/job-draft"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "52702a91-6253-4e21-aff5-5f0d4b8e153e",
+                    "leftValue": "={{ $('parse route1').item.json.message }}",
+                    "rightValue": "/link",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "/link"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "82598ad0-33db-4784-b1a3-8340e71878c2",
+                    "leftValue": "={{ $('parse route1').item.json.message }}",
+                    "rightValue": "/kota",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "/kota"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "4a6e20ba-ce98-46b9-b741-df793fbbd39c",
+                    "leftValue": "={{ $('parse route1').item.json.message }}",
+                    "rightValue": "/delete",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "/delete"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "56a91f5f-e966-4438-8d19-1c8fa6b5c69c",
+                    "leftValue": "={{ $('parse route1').item.json.message }}",
+                    "rightValue": "/edit",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "/edit"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "aabf92b6-41b7-4ff9-9308-65d06163807f",
+                    "leftValue": "={{ $('parse route1').item.json.message }}",
+                    "rightValue": "lpk-edit",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "lpk-edit"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "c5030f52-1263-4868-a704-317609c129f7",
+                    "leftValue": "={{ $('parse route1').item.json.message }}",
+                    "rightValue": "biaya-edit",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "biaya-edit"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "bc1d2a83-9a16-4ca8-bc12-412a52defc3c",
+                    "leftValue": "={{ $('parse route1').item.json.message }}",
+                    "rightValue": "job-edit",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "job-edit"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "88a70d2c-89c6-46ea-8026-942a9a559e83",
+                    "leftValue": "={{ $('parse route1').item.json.message }}",
+                    "rightValue": "job-draft-edit",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "job-draft-edit"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "9943e5b1-bc6d-40c7-bffe-5baee4dc81c1",
+                    "leftValue": "={{ $('parse route1').item.json.message }}",
+                    "rightValue": "link-edit",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "link-edit"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "96739ac1-9e66-4669-a4d4-c1e9c1aa9dbe",
+                    "leftValue": "={{ $('parse route1').item.json.message }}",
+                    "rightValue": "kota-edit",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "kota-edit"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "bcd851eb-be72-4e0c-97cf-d6790a177fe4",
+                    "leftValue": "={{ $('parse route1').item.json.message }}",
+                    "rightValue": "lpk-edit-save",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "lpk-edit-save"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "dbac3c95-ff7e-4cec-89fa-d9ef49713df1",
+                    "leftValue": "={{ $('parse route1').item.json.message }}",
+                    "rightValue": "biaya-edit-save",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "=biaya-edit-save"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "0e2419c1-8abc-4ad1-b177-6ecf70bffaa8",
+                    "leftValue": "={{ $('parse route1').item.json.message }}",
+                    "rightValue": "job-edit-save",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "job-edit-save"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "081d02ac-f17c-46e0-8396-e72d9c418167",
+                    "leftValue": "={{ $('parse route1').item.json.message }}",
+                    "rightValue": "visa-edit",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "visa-edit"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "e7d9e02a-02e7-4d49-9614-3c445a11f628",
+                    "leftValue": "={{ $('parse route1').item.json.message }}",
+                    "rightValue": "visa-edit-save",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "visa-edit-save"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "dce16880-8246-4a7f-8c1e-3de0ec685135",
+                    "leftValue": "={{ $('parse route1').item.json.message }}",
+                    "rightValue": "/job-edit",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "/job-edit"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "d01d8777-acda-4a5e-9119-bbcf60650c26",
+                    "leftValue": "={{ $('parse route1').item.json.message }}",
+                    "rightValue": "/link-edit",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "/link-edit"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "d25c5932-c196-4c54-b90e-18489b02b531",
+                    "leftValue": "={{ $('parse route1').item.json.message }}",
+                    "rightValue": "/kota-edit",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "/kota-edit"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "ea56c583-32ed-4bca-a80d-233fcf86a32a",
+                    "leftValue": "={{ $('parse route1').item.json.message }}",
+                    "rightValue": "",
+                    "operator": {
+                      "type": "string",
+                      "operation": "exists",
+                      "singleValue": true
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "random input"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.2,
+      "position": [
+        0,
+        0
+      ],
+      "id": "bfc06253-b685-4ba3-8128-d6b2d78e80bf",
+      "name": "routes1"
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('admin').first().json.message?.chat?.id ?? $('admin').first().json.callback_query.message.chat.id }}",
+        "text": "=⏳Tunggu ya...",
+        "additionalFields": {
+          "appendAttribution": false,
+          "parse_mode": "Markdown"
+        }
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        -448,
+        288
+      ],
+      "id": "82dfe7ae-0118-40fd-9e35-06b7e977a1c4",
+      "name": "loading message1",
+      "webhookId": "b3a9c439-fc32-4552-b602-60cbbfd2ab6e",
+      "credentials": {
+        "telegramApi": {
+          "id": "hTGo4l6MBPW4yIQ5",
+          "name": "moon"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// Ambil data dari Customer node\nconst data = $('admin').first().json;\n\nconst rawMessage = data.message?.text ?? data.callback_query?.data ?? \"\";\n\n// Default\nlet category = \"other\";\nlet message = rawMessage;\nlet value = null;\n\n// Cek kategori\nif (rawMessage.includes(\"/\")) {\n  category = \"slash\"; // kalau ada /\n\n  // Hilangkan spasi berlebih, ganti semua spasi >1 jadi 1 spasi\n  const cleaned = rawMessage.trim().replace(/\\s+/g, ' ');\n  \n  // Split jadi dua bagian\n  const data = cleaned.split(' ');\n\n  message = data[0];\n  value = data[1];\n} else if (rawMessage.includes(\"_\")) {\n  category = \"underscore\"; // kalau ada _\n  \n  // Split pertama menjadi prefix & suffix\n  const [prefix, suffix] = rawMessage.split(\"_\", 2);\n  message = prefix;\n  value = suffix;\n}\n\n// Siapkan output JSON\nconst output = {\n  rawMessage, // pesan utuh\n  message,    // prefix (addToCart, page, dsb)\n  value,      // suffix (P002, 2, dsb)\n  category,   // tipe kategori\n};\n\n// Output ke next node\nreturn [\n  {\n    json: output,\n  },\n];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -224,
+        288
+      ],
+      "id": "41a2aaab-e7b0-4c7c-a911-ab90b41fc4ab",
+      "name": "parse route1",
+      "alwaysOutputData": false
+    },
+    {
+      "parameters": {
+        "content": "# Route\n",
+        "height": 128,
+        "width": 496
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -640,
+        -16
+      ],
+      "typeVersion": 1,
+      "id": "52a65fb5-07f7-4786-a5f2-5b130ffd9081",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1nJm8xcQtpqQYOvgzSyUg_urM7iQqSt03z1ER-qXYAsg",
+          "mode": "list",
+          "cachedResultName": "job content",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1nJm8xcQtpqQYOvgzSyUg_urM7iQqSt03z1ER-qXYAsg/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 576673742,
+          "mode": "list",
+          "cachedResultName": "content",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1nJm8xcQtpqQYOvgzSyUg_urM7iQqSt03z1ER-qXYAsg/edit#gid=576673742"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        432,
+        16
+      ],
+      "id": "41210834-6950-4307-aa8a-25c77d55788e",
+      "name": "get jobs",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "OvN8nNf9TLRqWd2k",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "batchSize": "={{ $('get jobs').all().length }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        656,
+        16
+      ],
+      "id": "9de08c13-af38-4f6c-af54-6e2f439fdc0b",
+      "name": "jobs"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Ambil semua data dari input (array)\nconst data = $input.all().map(item => item.json);\n\n// Filter data kosong (yang gak punya JOB atau JOB DRAFT)\nconst validItems = data.filter(\n  d => d.JOB && d[\"JOB DRAFT\"] && d.JOB.trim() !== \"\" && d[\"JOB DRAFT\"].trim() !== \"\"\n);\n\n// Ubah ke format Telegram-friendly (HTML)\nconst results = validItems.map(item => {\n  // Siapkan bagian link (kalau ada 2 link)\n  let links = \"\";\n  if (item[\"Link Postingan\"] && item[\"Link Postingan 2\"]) {\n    links = `<a href=\"${item[\"Link Postingan\"]}\">🔗 Lihat Postingan 1</a>\n<a href=\"${item[\"Link Postingan 2\"]}\">🔗 Lihat Postingan 2</a>`;\n  } else if (item[\"Link Postingan\"]) {\n    links = `<a href=\"${item[\"Link Postingan\"]}\">🔗 Lihat Postingan</a>`;\n  } else if (item[\"Link Postingan 2\"]) {\n    links = `<a href=\"${item[\"Link Postingan 2\"]}\">🔗 Lihat Postingan</a>`;\n  }\n\n  // Format pesan\n  const message = `\n<b>📋 Data Lowongan</b>\n\n<b>No:</b> ${item.No}\n<b>LPK:</b> ${item.LPK || \"-\"}\n<b>Biaya:</b> ${item[\"Biaya\"] ? \"Rp. \" + item[\"Biaya\"].toLocaleString(\"id-ID\") : \"-\"}\n<b>JOB:</b> ${item.JOB}\n<b>VISA:</b> ${item.VISA}\n<b>📄 JOB DRAFT</b>\n<pre>${item[\"JOB DRAFT\"]}</pre>\n${links ? links : \"\"}\n${item.Kota ? `<b>Kota:</b> ${item.Kota}` : \"\"}\n${item[\"Tanggal Input\"] ? `<b>Tanggal Input:</b> ${item[\"Tanggal Input\"]}` : \"\"}\n`;\n\n  return {\n    json: { message }\n  };\n});\n\nreturn results;\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        880,
+        -64
+      ],
+      "id": "069156bf-39c1-4370-808f-5debe0b1a7e0",
+      "name": "parse job"
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('admin').first().json.message.chat.id }}",
+        "text": "={{ $json.message }}",
+        "replyMarkup": "forceReply",
+        "forceReply": {},
+        "additionalFields": {
+          "appendAttribution": false,
+          "parse_mode": "HTML"
+        }
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        1104,
+        16
+      ],
+      "id": "d8d3e6c2-406f-4cf3-a779-81b8d58a5386",
+      "name": "success4",
+      "webhookId": "b3a9c439-fc32-4552-b602-60cbbfd2ab6e",
+      "credentials": {
+        "telegramApi": {
+          "id": "hTGo4l6MBPW4yIQ5",
+          "name": "moon"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "# Get Data\n",
+        "height": 128,
+        "width": 496
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        576,
+        -224
+      ],
+      "typeVersion": 1,
+      "id": "235ae5fa-e2f8-439f-ba68-8077f70825b7",
+      "name": "Sticky Note1"
+    },
+    {
+      "parameters": {
+        "jsCode": "const input = $('job-draft-edit').first().json.rawMessage.trim();\n// Contoh input: \"/job-edit 12 Biaya=250000 | JOB=KAIGO | VISA=GIJINKOKU\"\n\nif (!input) {\n  return {\n    status: \"error\",\n    message: \"Input kosong. Gunakan format: /job-edit [Nomor_Baris] Kolom=Nilai | Kolom=Nilai\"\n  };\n}\n\n// Hapus prefix command\nconst clean = input.replace(/^\\/job-edit\\s+/, '');\n\n// Ambil nomor baris (angka pertama)\nconst match = clean.match(/^(\\d+)\\s+(.*)$/);\nif (!match) {\n  return {\n    status: \"error\",\n    message: \"Format tidak valid. Gunakan: /job-edit [Nomor_Baris] Kolom=Nilai | Kolom=Nilai\"\n  };\n}\n\nconst rowNumber = parseInt(match[1]);\nconst updatesRaw = match[2];\n\n// Pisahkan berdasarkan \"|\"\nconst updates = updatesRaw.split('|').map(x => x.trim());\n\n// Buat object hasilnya\nlet data = {};\nupdates.forEach(pair => {\n  const [key, val] = pair.split('=').map(x => x.trim());\n  if (key && val) data[key] = val;\n});\n\n// Cek kalau gak ada data yang valid\nif (Object.keys(data).length === 0) {\n  return {\n    status: \"error\",\n    message: \"Tidak ada kolom yang valid. Gunakan format: Kolom=Nilai, pisahkan dengan |\"\n  };\n}\n\n// Return hasil sukses\nreturn {\n  status: \"success\",\n  rowNumber,\n  updates: data,\n  message: `Edit data di baris ${rowNumber} berhasil diparsing.`,\n};\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        544,
+        432
+      ],
+      "id": "1f311ce6-9b1b-4163-8d41-16c6ff9a4f83",
+      "name": "parse job draft"
+    },
+    {
+      "parameters": {
+        "content": "# Bikin strutcture data kayak API",
+        "height": 128,
+        "width": 496
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        480,
+        272
+      ],
+      "typeVersion": 1,
+      "id": "4cde5ce1-513d-4940-9b95-f77bbb5fecff",
+      "name": "Sticky Note2"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "5a696147-afc1-4328-93be-9909ec2e6294",
+              "name": "chatid",
+              "value": "={{ $('admin').first().json.callback_query.message.chat.id }}",
+              "type": "string"
+            },
+            {
+              "id": "d01bf204-b5d2-4105-92fd-0d2dc5396c85",
+              "name": "value",
+              "value": "={{ $('parse route1').first().json.value }}",
+              "type": "string"
+            },
+            {
+              "id": "96b01848-0b60-4625-a9ab-3b4ec52f53fb",
+              "name": "column",
+              "value": "={{ $json.message.split('-')[0] }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1136,
+        400
+      ],
+      "id": "bac185ce-8cd4-4f78-a3cc-d58e7b14f396",
+      "name": "CONFIG5"
+    },
+    {
+      "parameters": {
+        "content": "# Config",
+        "height": 128,
+        "width": 496
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        1088,
+        240
+      ],
+      "typeVersion": 1,
+      "id": "64d2a823-32f4-4d2b-ac52-0f0f1c2a3613",
+      "name": "Sticky Note3"
+    }
+  ],
+  "pinData": {
+    "admin": [
+      {
+        "json": {
+          "update_id": 867152779,
+          "message": {
+            "message_id": 6288,
+            "from": {
+              "id": 7944966191,
+              "is_bot": false,
+              "first_name": "Aji",
+              "last_name": "Maulana",
+              "language_code": "en"
+            },
+            "chat": {
+              "id": 7944966191,
+              "first_name": "Aji",
+              "last_name": "Maulana",
+              "type": "private"
+            },
+            "date": 1760501291,
+            "text": "/start",
+            "entities": [
+              {
+                "offset": 0,
+                "length": 6,
+                "type": "bot_command"
+              }
+            ]
+          }
+        }
+      }
+    ]
+  },
+  "connections": {
+    "admin": {
+      "main": [
+        [
+          {
+            "node": "loading message1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "loading message1": {
+      "main": [
+        [
+          {
+            "node": "parse route1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "parse route1": {
+      "main": [
+        [
+          {
+            "node": "routes1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "get jobs": {
+      "main": [
+        [
+          {
+            "node": "jobs",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "jobs": {
+      "main": [
+        [],
+        [
+          {
+            "node": "parse job",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "parse job": {
+      "main": [
+        [
+          {
+            "node": "success4",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "success4": {
+      "main": [
+        [
+          {
+            "node": "jobs",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "28cf9267-e8bf-444d-8f46-75ee17021436",
+  "meta": {
+    "instanceId": "80dcdb6d764a9e0a76ac43467b1c18f810be7707905c2aa80296745ad72066f1"
+  },
+  "id": "qrj7ExKEwjjOwgQY",
+  "tags": []
+}
