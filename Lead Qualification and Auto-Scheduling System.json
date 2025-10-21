@@ -1,0 +1,544 @@
+{
+  "name": "Lead Qualification and Auto-Scheduling System",
+  "nodes": [
+    {
+      "parameters": {
+        "formTitle": "Lead Qualification Form",
+        "formDescription": "Tell us about your company and we'll get back to you soon!",
+        "formFields": {
+          "values": [
+            {
+              "fieldLabel": "Email Address",
+              "fieldType": "email",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Company Name",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Your Role",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Company Website"
+            }
+          ]
+        },
+        "options": {
+          "buttonLabel": "Submit"
+        }
+      },
+      "id": "719661a9-b650-4828-b578-7df3a08f66c6",
+      "name": "Lead Submission Form",
+      "type": "n8n-nodes-base.formTrigger",
+      "typeVersion": 2.3,
+      "position": [
+        -1456,
+        0
+      ],
+      "webhookId": "d45a208a-2359-43b9-a6f5-eafa4a1e4dbc"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "id-1",
+              "name": "highScoreThreshold",
+              "value": 70,
+              "type": "number"
+            },
+            {
+              "id": "id-2",
+              "name": "meetingDuration",
+              "value": 15,
+              "type": "number"
+            },
+            {
+              "id": "id-3",
+              "name": "myEmail",
+              "value": "aji70031@gmail.com",
+              "type": "string"
+            }
+          ]
+        },
+        "includeOtherFields": true,
+        "options": {}
+      },
+      "id": "5e6ef235-6c3a-4a08-a82a-4b1acea941a2",
+      "name": "Workflow Configuration",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -1232,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "url": "={{  $json['Company Website']|| 'https://example.com' }}",
+        "options": {
+          "allowUnauthorizedCerts": true,
+          "timeout": 10000
+        }
+      },
+      "id": "3473fde8-28e2-44c4-babc-6b62cd3a7b7b",
+      "name": "Fetch Company Website Data",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -1008,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "id-1",
+              "name": "websiteContent",
+              "value": "={{ $json.data }}",
+              "type": "string"
+            },
+            {
+              "id": "id-2",
+              "name": "leadInfo",
+              "value": "={{ JSON.stringify({ email: $('Lead Submission Form').item.json['Email Address'], company: $('Lead Submission Form').item.json['Company Name'], role: $('Lead Submission Form').item.json['Your Role'], website: $('Lead Submission Form').item.json['Company Website'] }) }}",
+              "type": "object"
+            }
+          ]
+        },
+        "includeOtherFields": true,
+        "options": {}
+      },
+      "id": "5bd69ec5-0093-4859-9071-7e2133e36218",
+      "name": "Prepare Data for AI",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -784,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=You are a lead qualification expert. Analyze the provided lead information and their company website content. Evaluate the lead based on: 1) Company size and industry relevance, 2) Role seniority and decision-making authority, 3) Website quality and business maturity, 4) Potential fit for our services. Provide a lead score from 0-100 and a brief qualification summary explaining your reasoning. Lead Info: {{ $json.leadInfo }} Website Content: {{ $json.websiteContent }}",
+        "hasOutputParser": true,
+        "options": {}
+      },
+      "id": "abe45042-3d49-48d2-a49e-9ccc60854789",
+      "name": "AI Lead Qualifier",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2.2,
+      "position": [
+        -1424,
+        240
+      ]
+    },
+    {
+      "parameters": {
+        "schemaType": "manual",
+        "inputSchema": "{\n\t\"type\": \"object\",\n\t\"properties\": {\n\t\t\"leadScore\": {\n\t\t\t\"type\": \"number\",\n\t\t\t\"description\": \"Lead qualification score from 0 to 100\"\n\t\t},\n\t\t\"qualificationSummary\": {\n\t\t\t\"type\": \"string\",\n\t\t\t\"description\": \"Brief explanation of the lead score and qualification reasoning\"\n\t\t},\n\t\t\"recommendedAction\": {\n\t\t\t\"type\": \"string\",\n\t\t\t\"description\": \"Recommended next action for this lead\"\n\t\t}\n\t}\n}"
+      },
+      "id": "19527082-a049-43a8-a684-71d5e1ffe79b",
+      "name": "Structured Output Parser",
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.3,
+      "position": [
+        -1216,
+        432
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "id-1",
+              "leftValue": "={{ $json.output.leadScore }}",
+              "rightValue": "={{ $('Workflow Configuration').first().json.highScoreThreshold }}",
+              "operator": {
+                "type": "number",
+                "operation": "gte"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "c70df98b-4497-4acf-af80-41730c06c289",
+      "name": "Check Lead Score",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -1088,
+        240
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "19ey1YxGPvIHE5rDRgAcPXzK5yROqrtRCdveam9C90Yk",
+          "mode": "list",
+          "cachedResultName": "Qualified company",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/19ey1YxGPvIHE5rDRgAcPXzK5yROqrtRCdveam9C90Yk/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/19ey1YxGPvIHE5rDRgAcPXzK5yROqrtRCdveam9C90Yk/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Lead Score": "={{ $json.output.leadScore }}",
+            "Qualification Summary": "={{ $json.output.qualificationSummary }}",
+            "Recomendation Action": "={{ $json.output.recommendedAction }}"
+          },
+          "matchingColumns": [
+            "Email"
+          ],
+          "schema": [
+            {
+              "id": "Lead Score",
+              "displayName": "Lead Score",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Qualification Summary",
+              "displayName": "Qualification Summary",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Recomendation Action",
+              "displayName": "Recomendation Action",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "id": "1877e7be-edaa-42bf-9ba0-5b9eab7926ae",
+      "name": "Add to Google Sheets",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        -816,
+        224
+      ],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "n6Inp4eOgxqYkc5G",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "calendar",
+        "calendar": {
+          "__rl": true,
+          "value": "ajim70031@gmail.com",
+          "mode": "list",
+          "cachedResultName": "ajim70031@gmail.com"
+        },
+        "timeMin": "={{ $now.toISO() }}",
+        "timeMax": "={{ $now.plus({ days: 14 }).toISO() }}",
+        "options": {
+          "timezone": {
+            "__rl": true,
+            "mode": "id",
+            "value": "UTC"
+          }
+        }
+      },
+      "id": "0dc68ced-455d-4c73-9414-0f1e275027b3",
+      "name": "Find Available Slot",
+      "type": "n8n-nodes-base.googleCalendar",
+      "typeVersion": 1.3,
+      "position": [
+        -832,
+        400
+      ],
+      "credentials": {
+        "googleCalendarOAuth2Api": {
+          "id": "opxtyOvSg8kuLfNr",
+          "name": "Google Calendar account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "calendar": {
+          "__rl": true,
+          "value": "ajim70031@gmail.com",
+          "mode": "list",
+          "cachedResultName": "ajim70031@gmail.com"
+        },
+        "start": "={{ $json.start || $now.plus({ days: 1 }).set({ hour: 10, minute: 0 }).toISO() }}",
+        "end": "={{ $json.end || $now.plus({ days: 1 }).set({ hour: 10, minute: 15 }).toISO() }}",
+        "additionalFields": {
+          "attendees": [
+            "={{ $('Lead Submission Form').item.json['Email Address'] }}"
+          ],
+          "description": "={{ 'Lead qualification call with ' + $('Lead Submission Form').first().json.yourRole + ' from ' + $('Lead Submission Form').first().json.companyName + '. Lead Score: ' + $('AI Lead Qualifier').first().json.leadScore }}",
+          "summary": "={{ 'Intro Call with ' + $('Lead Submission Form').item.json['Company Name'] }}"
+        }
+      },
+      "id": "561cddf6-4e15-4bbe-a2dc-4fc4c3b94f10",
+      "name": "Create Calendar Event",
+      "type": "n8n-nodes-base.googleCalendar",
+      "typeVersion": 1.3,
+      "position": [
+        -1456,
+        624
+      ],
+      "credentials": {
+        "googleCalendarOAuth2Api": {
+          "id": "opxtyOvSg8kuLfNr",
+          "name": "Google Calendar account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ $('Lead Submission Form').first().json['Email Address'] }}",
+        "subject": "={{ 'Meeting Confirmed: Intro Call with ' + $('Lead Submission Form').item.json['Company Name'] }}",
+        "message": "={{ '<p>Hi there,</p><p>Thank you for your interest! We\\'ve scheduled a 15-minute intro call with you.</p><p><strong>Meeting Details:</strong><br>Date & Time: ' + $json.start.dateTime + '<br>Duration: 15 minutes<br>Calendar invite has been sent to your email.</p><p>Looking forward to speaking with you!</p><p>Best regards</p>' }}",
+        "options": {
+          "appendAttribution": false
+        }
+      },
+      "id": "d258740e-f2f4-4309-a6b2-a9d4a3c00b27",
+      "name": "Send Confirmation to Lead",
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        -1216,
+        624
+      ],
+      "webhookId": "e8a8e96f-680b-4c1d-8aa7-07609516ac7b",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "KReqRoVcrMEElBW6",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ $('Workflow Configuration').first().json.myEmail }}",
+        "subject": "={{ 'New High-Score Lead: ' + $('AI Lead Qualifier').item.json.output.leadScore }}",
+        "message": "={{ '<p><strong>New qualified lead submitted!</strong></p><p><strong>Lead Details:</strong><br>Company: ' + $('Lead Submission Form').item.json['Company Name'] + '<br>Contact: ' + $('Lead Submission Form').item.json['Email Address'] + '<br>Role: ' + $('Lead Submission Form').item.json['Your Role'] + '<br>Website: ' + $('Lead Submission Form').item.json['Company Website'] + '</p><p><strong>AI Qualification:</strong><br>Score: ' + $('AI Lead Qualifier').item.json.output.leadScore + '/100<br>Summary: ' + $('AI Lead Qualifier').item.json.output.qualificationSummary + '<br>Recommended Action: ' + $('AI Lead Qualifier').item.json.output.recommendedAction + '</p><p><strong>Meeting Scheduled:</strong><br>Time: ' + $('Create Calendar Event').item.json.start.dateTime + '</p>' }}",
+        "options": {
+          "appendAttribution": false
+        }
+      },
+      "id": "33454ddc-7e0b-4aaa-8e70-8f53371ed2de",
+      "name": "Notify Me",
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        -1008,
+        624
+      ],
+      "webhookId": "6a1eed98-566b-40d6-ab50-ad6aa97b5045",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "KReqRoVcrMEElBW6",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        -1456,
+        432
+      ],
+      "id": "e1b74ff8-3a60-4329-b312-1282d1f5bc14",
+      "name": "Google Gemini Chat Model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "N30De0uI4v5uPXz4",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Lead Submission Form": {
+      "main": [
+        [
+          {
+            "node": "Workflow Configuration",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Workflow Configuration": {
+      "main": [
+        [
+          {
+            "node": "Fetch Company Website Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Fetch Company Website Data": {
+      "main": [
+        [
+          {
+            "node": "Prepare Data for AI",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prepare Data for AI": {
+      "main": [
+        [
+          {
+            "node": "AI Lead Qualifier",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Structured Output Parser": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "AI Lead Qualifier",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Lead Qualifier": {
+      "main": [
+        [
+          {
+            "node": "Check Lead Score",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check Lead Score": {
+      "main": [
+        [
+          {
+            "node": "Add to Google Sheets",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Find Available Slot",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Find Available Slot": {
+      "main": [
+        [
+          {
+            "node": "Create Calendar Event",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create Calendar Event": {
+      "main": [
+        [
+          {
+            "node": "Send Confirmation to Lead",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send Confirmation to Lead": {
+      "main": [
+        [
+          {
+            "node": "Notify Me",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Lead Qualifier",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "f997cd05-0d6b-4197-9451-5b9beb8eb584",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "679239bc29e0da9cc45481e3fcc07ac39191e58e32f40578b9ba4b7bccec0fda"
+  },
+  "id": "GAPAnwfZSxM2X8SI",
+  "tags": []
+}
