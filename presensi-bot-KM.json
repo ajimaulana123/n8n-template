@@ -1,0 +1,1546 @@
+{
+  "name": "presensi-bot-KM",
+  "nodes": [
+    {
+      "parameters": {
+        "updates": [
+          "message",
+          "callback_query"
+        ],
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegramTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        -1620,
+        580
+      ],
+      "id": "07aac20b-1f0a-4639-8b0c-5334f17a2e69",
+      "name": "KM",
+      "webhookId": "c6874669-a19a-4fe4-aa37-004afe4e6f82",
+      "credentials": {
+        "telegramApi": {
+          "id": "muhl5TZYC7SRnxnp",
+          "name": "PRESENSI-BOT-KM"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('config').first().json.chatid_for_text_message }}",
+        "text": "=⏳Tunggu ya...",
+        "additionalFields": {
+          "appendAttribution": false,
+          "parse_mode": "Markdown"
+        }
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        -740,
+        680
+      ],
+      "id": "90a3443b-5484-4dfb-af7d-4cbad4472c62",
+      "name": "loading message",
+      "webhookId": "b3a9c439-fc32-4552-b602-60cbbfd2ab6e",
+      "credentials": {
+        "telegramApi": {
+          "id": "muhl5TZYC7SRnxnp",
+          "name": "PRESENSI-BOT-KM"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// Ambil data dari Customer node\nconst data = $('KM').first().json;\n\nconst rawMessage = data.message?.text ?? data.callback_query?.data ?? \"\";\n\n// Default\nlet category = \"other\";\nlet message = rawMessage;\nlet value = null;\n\n// Cek kategori\nif (rawMessage.includes(\"/\")) {\n  category = \"slash\"; // kalau ada /\n\n  // Hilangkan spasi berlebih, ganti semua spasi >1 jadi 1 spasi\n  const cleaned = rawMessage.trim().replace(/\\s+/g, ' ');\n  \n  // Split jadi dua bagian\n  const data = cleaned.split(' ');\n\n  message = data[0];\n  value = data[1];\n} else if (rawMessage.includes(\"_\")) {\n  category = \"underscore\"; // kalau ada _\n  \n  // Split pertama menjadi prefix & suffix\n  const [prefix, suffix] = rawMessage.split(\"_\", 2);\n  message = prefix;\n  value = suffix;\n}\n\n// Siapkan output JSON\nconst output = {\n  rawMessage, // pesan utuh\n  message,    // prefix (addToCart, page, dsb)\n  value,      // suffix (P002, 2, dsb)\n  category,   // tipe kategori\n};\n\n// Output ke next node\nreturn [\n  {\n    json: output,\n  },\n];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -1180,
+        580
+      ],
+      "id": "e72c3817-c07c-40d1-8bdd-6bb32c17823b",
+      "name": "parse route",
+      "alwaysOutputData": false
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "248b27af-42fa-4cef-aa44-c2fdb3f42acc",
+                    "leftValue": "={{ $('parse route').item.json.message }}",
+                    "rightValue": "=/start",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "/start"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "756818ef-96c7-4c57-ba6e-e1d109be5bc2",
+                    "leftValue": "={{ $('parse route').item.json.message }}",
+                    "rightValue": "/help",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "=/help"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "87c9f887-ccaa-47a0-9851-3ea8e0f702fd",
+                    "leftValue": "={{ $('parse route').item.json.message }}",
+                    "rightValue": "/data_murid",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "/data_murid"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "bc1d2a83-9a16-4ca8-bc12-412a52defc3c",
+                    "leftValue": "={{ $('parse route').item.json.message }}",
+                    "rightValue": "hadir",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "hadir"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "88a70d2c-89c6-46ea-8026-942a9a559e83",
+                    "leftValue": "={{ $('parse route').item.json.message }}",
+                    "rightValue": "izin",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "izin"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "9943e5b1-bc6d-40c7-bffe-5baee4dc81c1",
+                    "leftValue": "={{ $('parse route').item.json.message }}",
+                    "rightValue": "sakit",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "sakit"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "96739ac1-9e66-4669-a4d4-c1e9c1aa9dbe",
+                    "leftValue": "={{ $('parse route').item.json.message }}",
+                    "rightValue": "alfa",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "alfa"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "ea56c583-32ed-4bca-a80d-233fcf86a32a",
+                    "leftValue": "={{ $('parse route').item.json.message }}",
+                    "rightValue": "",
+                    "operator": {
+                      "type": "string",
+                      "operation": "exists",
+                      "singleValue": true
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "random input"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.2,
+      "position": [
+        -520,
+        480
+      ],
+      "id": "31a64eac-ac97-4a6c-ba95-4b25de6b7ab7",
+      "name": "routes"
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('config').first().json.chatid_for_text_message }}",
+        "text": "=👋 Hai <b>KM!</b>\n\n<i>Selamat datang di Bot Absensi Kelas.</i>\n\nKamu bisa menggunakan perintah berikut:\n➡️ /data_murid → Lihat daftar siswa di kelasmu\n➡️ Tekan tombol (✅ Hadir | ❌ Alfa | 🤒 Sakit | 📝 Izin) untuk menandai kehadiran\n\nSetiap kali kamu absenin siswa, datanya otomatis masuk ke <b>Google Spreadsheet</b> dan notifikasi dikirim ke orang tua.",
+        "replyMarkup": "forceReply",
+        "forceReply": {},
+        "additionalFields": {
+          "appendAttribution": false,
+          "parse_mode": "HTML"
+        }
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        -300,
+        180
+      ],
+      "id": "780eefdf-b7c1-4570-acce-d0fd150a0d86",
+      "name": " welcome message",
+      "webhookId": "b3a9c439-fc32-4552-b602-60cbbfd2ab6e",
+      "credentials": {
+        "telegramApi": {
+          "id": "muhl5TZYC7SRnxnp",
+          "name": "PRESENSI-BOT-KM"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "5a696147-afc1-4328-93be-9909ec2e6294",
+              "name": "chatid_for_text_message",
+              "value": "={{ $('KM').first().json.message.chat.id }}",
+              "type": "string"
+            },
+            {
+              "id": "d415e328-d42a-44a4-b77a-3dc9a24d38d4",
+              "name": "chatid_for_callback_query",
+              "value": "={{ $('KM').first().json.callback_query.message.chat.id }}",
+              "type": "string"
+            },
+            {
+              "id": "30ac1baf-80ac-4a31-a633-b473ecac90d9",
+              "name": "callback_query.message.message_id",
+              "value": "={{ $json.callback_query.message.message_id }}",
+              "type": "number"
+            },
+            {
+              "id": "65eaabae-ee14-43dc-b152-26b14767a20d",
+              "name": "callback_query.message.chat.id",
+              "value": "={{ $json.callback_query.message.chat.id }}",
+              "type": "number"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -1400,
+        580
+      ],
+      "id": "b96fcc3a-c04b-45bb-be56-fd1228cc3389",
+      "name": "config"
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('config').first().json.chatid_for_text_message }}",
+        "text": "=ℹ️ <b>Panduan Bot Absensi Kelas</b>\n\nKamu bisa menggunakan perintah berikut:\n➡️ /data_murid → Lihat daftar siswa di kelasmu  \n➡️ Tekan tombol (✅ Hadir | ❌ Alfa | 🤒 Sakit | 📝 Izin) untuk menandai kehadiran  \n\nSetiap kali kamu absenin siswa, datanya otomatis masuk ke <b>Google Spreadsheet</b> dan notifikasi dikirim ke orang tua.\n\n📌 <i>Tips:</i>  \nJika ada kendala, coba kirim ulang perintah /start untuk memulai ulang bot.",
+        "replyMarkup": "forceReply",
+        "forceReply": {},
+        "additionalFields": {
+          "appendAttribution": false,
+          "parse_mode": "HTML"
+        }
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        -300,
+        380
+      ],
+      "id": "29a44f84-3505-436a-ab7b-6e7deb0a8270",
+      "name": " help message",
+      "webhookId": "b3a9c439-fc32-4552-b602-60cbbfd2ab6e",
+      "credentials": {
+        "telegramApi": {
+          "id": "muhl5TZYC7SRnxnp",
+          "name": "PRESENSI-BOT-KM"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('config').first().json.chatid_for_text_message }}",
+        "text": "=😊 <b>Perintah nggak dikenali.</b>\n\nTenang — ini daftar perintah yang bisa kamu pakai:\n➡️ /start – Menampilkan menu utama  \n➡️ /data_murid – Lihat daftar siswa di kelasmu  \n➡️ Tekan tombol absensi untuk menandai kehadiran (✅ Hadir | ❌ Alfa | 🤒 Sakit | 📝 Izin)\n\n📌 <i>Kalau bingung, ketuk <code>/start</code> untuk kembali ke menu utama.</i>\n",
+        "replyMarkup": "forceReply",
+        "forceReply": {},
+        "additionalFields": {
+          "appendAttribution": false,
+          "parse_mode": "HTML"
+        }
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        -300,
+        1030
+      ],
+      "id": "573c3881-53fb-4a08-b3db-41ee1b6b99ac",
+      "name": "not match message",
+      "webhookId": "b3a9c439-fc32-4552-b602-60cbbfd2ab6e",
+      "credentials": {
+        "telegramApi": {
+          "id": "muhl5TZYC7SRnxnp",
+          "name": "PRESENSI-BOT-KM"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "batchSize": "={{ $('get students').all().length }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        -80,
+        580
+      ],
+      "id": "bcce69e3-72ef-4302-9b5d-66a74d02c825",
+      "name": "loop students"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Ambil data dari node sebelumnya (Loop Students)\nconst students = items.map(item => item.json);\n\n// Buat array output (1 item per siswa)\nconst results = students.map((s, index) => {\n  // Format pesan tiap siswa\n  const message = \n    `👨‍🎓 <b>Data Siswa #${index + 1}</b>\\n\\n` +\n    `<b>Nama:</b> ${s[\"Nama Lengkap \"]}\\n` +\n    `🆔 <b>NIS:</b> <code>${s.nis}</code>\\n` +\n    `🏫 <b>Kelas:</b> ${s.Kelas}\\n\\n` +\n    `Pilih status kehadiran siswa ini:\\n`;\n\n  // Inline keyboard untuk siswa ini\n  const keyboard = {\n    inline_keyboard: [\n      [\n        { text: '✅ Hadir', callback_data: `hadir_${s.nis}` },\n        { text: '❌ Alfa', callback_data: `alfa_${s.nis}` },\n      ],\n      [\n        { text: '🤒 Sakit', callback_data: `sakit_${s.nis}` },\n        { text: '📝 Izin', callback_data: `izin_${s.nis}` },\n      ],\n    ],\n  };\n\n  // Kembalikan format JSON per siswa\n  return {\n    json: {\n      text: message,\n      parse_mode: 'HTML',\n      reply_markup: keyboard,\n      nis: s.nis,\n      nama: s[\"Nama Lengkap \"],\n      kelas: s.Kelas,\n      row_number: s.row_number,\n    },\n  };\n});\n\n// Return semua item (satu per siswa)\nreturn results;\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        140,
+        505
+      ],
+      "id": "d3e1bb3c-1f22-43d0-88fe-cbb3e8868004",
+      "name": "parse student"
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('config').first().json.chatid_for_text_message }}",
+        "text": "={{ $json.text }}",
+        "replyMarkup": "inlineKeyboard",
+        "inlineKeyboard": {
+          "rows": [
+            {
+              "row": {
+                "buttons": [
+                  {
+                    "text": "={{ $json.reply_markup.inline_keyboard[0][0].text }}",
+                    "additionalFields": {
+                      "callback_data": "={{ $json.reply_markup.inline_keyboard[0][0].callback_data }}"
+                    }
+                  },
+                  {
+                    "text": "={{ $json.reply_markup.inline_keyboard[0][1].text }}",
+                    "additionalFields": {
+                      "callback_data": "={{ $json.reply_markup.inline_keyboard[0][1].callback_data }}"
+                    }
+                  },
+                  {
+                    "text": "={{ $json.reply_markup.inline_keyboard[1][0].text }}",
+                    "additionalFields": {
+                      "callback_data": "={{ $json.reply_markup.inline_keyboard[1][0].callback_data }}"
+                    }
+                  },
+                  {
+                    "text": "={{ $json.reply_markup.inline_keyboard[1][1].text }}",
+                    "additionalFields": {
+                      "callback_data": "={{ $json.reply_markup.inline_keyboard[1][1].callback_data }}"
+                    }
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        "additionalFields": {
+          "appendAttribution": false,
+          "parse_mode": "HTML"
+        }
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        360,
+        580
+      ],
+      "id": "df210dd4-0d84-4ce8-aab8-d8c8eda6665f",
+      "name": "student message",
+      "webhookId": "b3a9c439-fc32-4552-b602-60cbbfd2ab6e",
+      "credentials": {
+        "telegramApi": {
+          "id": "muhl5TZYC7SRnxnp",
+          "name": "PRESENSI-BOT-KM"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "136acac5-dee8-4ddf-9a5c-692927055afd",
+              "leftValue": "={{ $json.category }}",
+              "rightValue": "=underscore",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -960,
+        580
+      ],
+      "id": "a0d1ee44-07a1-409c-bbad-eb2ba4e2f902",
+      "name": "is underscore category route?"
+    },
+    {
+      "parameters": {
+        "operation": "editMessageText",
+        "chatId": "={{ $('config').first().json.callback_query.message.chat.id }}",
+        "messageId": "={{ $('config').first().json.callback_query.message.message_id }}",
+        "text": "=⏳Tunggu ya...",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        -740,
+        480
+      ],
+      "id": "6186c9ed-0b31-4041-a3ce-a0c7a75981d2",
+      "name": "loading for edit message",
+      "webhookId": "bb0625c1-45e0-4d96-82a8-8aa26d51fdc0",
+      "credentials": {
+        "telegramApi": {
+          "id": "muhl5TZYC7SRnxnp",
+          "name": "PRESENSI-BOT-KM"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// Ambil satu data siswa dari node sebelumnya\nconst s = items[0].json;\n\n// Ambil status dari tombol callback\nlet statusCallback = $('parse route').first().json.message || 'Hadir'; // misal: 'izin'\n\n// Mapping lowercase callback → property asli\nconst statusMap = {\n  'hadir': 'Hadir',\n  'sakit': 'Sakit',\n  'izin': 'Izin',\n  'alfa': 'Alfa'\n};\n\n// Mapping emoji sesuai status\nconst emojiMap = {\n  'hadir': '✅',\n  'sakit': '🤒',\n  'izin': '📝',\n  'alfa': '❌'\n};\n\n// Tentukan field yang dipilih sesuai property asli\nconst statusField = statusMap[statusCallback.toLowerCase()] || 'Hadir';\nconst emojiStatus = emojiMap[statusCallback.toLowerCase()] || '✅';\n\n// Ambil nilai sekarang, ubah \"\" / null / undefined menjadi 0\nlet currentValue = s[statusField];\nif (currentValue === \"\" || currentValue === null || currentValue === undefined || isNaN(Number(currentValue))) {\n  currentValue = 0;\n} else {\n  currentValue = Number(currentValue);\n}\n\n// Increment kolom yang dipilih\ns[statusField] = currentValue + 1;\n\n// Ambil waktu lokal WIB (UTC+7)\nconst now = new Date();\nconst utc = now.getTime() + now.getTimezoneOffset() * 60000;\nconst wibTime = new Date(utc + 7 * 60 * 60000);\n\n// Format tanggal dd-mm-yyyy\nconst day = String(wibTime.getDate()).padStart(2, '0');\nconst month = String(wibTime.getMonth() + 1).padStart(2, '0');\nconst year = wibTime.getFullYear();\ns.Tanggal = `${day}-${month}-${year}`;\n\n// Format jam HH:mm\ns.Jam = wibTime.toLocaleTimeString('id-ID', { hour12: false, hour: '2-digit', minute: '2-digit' });\n\n// Tambahkan status kehadiran yang friendly (emoji + teks)\ns.StatusKehadiran = `${emojiStatus} ${statusField}`;\n\n// Return hasil ke n8n\nreturn [{ json: s }];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -80,
+        830
+      ],
+      "id": "3aa76845-19e2-4be8-aa7a-80068e397322",
+      "name": "increment izin count1"
+    },
+    {
+      "parameters": {
+        "operation": "editMessageText",
+        "chatId": "={{ $('config').first().json.callback_query.message.chat.id }}",
+        "messageId": "={{ $('config').first().json.callback_query.message.message_id }}",
+        "text": "=✅ Absensi berhasil!\n\n{{ $('increment izin count1').first().json[\"Nama Lengkap \"] }} → {{ $('parse route').first().json.message.toTitleCase() }} ",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        580,
+        830
+      ],
+      "id": "a6a1a475-e0f2-4003-a143-84cc1076cfbf",
+      "name": "success update izin student message1",
+      "webhookId": "bb0625c1-45e0-4d96-82a8-8aa26d51fdc0",
+      "credentials": {
+        "telegramApi": {
+          "id": "muhl5TZYC7SRnxnp",
+          "name": "PRESENSI-BOT-KM"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('increment izin count1').first().json[\"Telegram ID Orang Tua\"] }}",
+        "text": "=👋 Halo, Bapak/Ibu <b>{{ $json[\"Nama Orang Tua\"] }}</b>!\n\nAnak Anda: <b>{{ $json[\"Nama Lengkap \"] }}</b> (NIS: <code>{{ $json.nis }}</code>, Kelas: {{ $json.Kelas }})  \nhari ini tercatat sebagai: {{ $json.statusKehadiran }}<b></b>\n\n🕒 Waktu: {{ $json.Tanggal }} {{ $json.Jam }}\n\nTerima kasih sudah memantau kehadiran anak Anda!\n",
+        "additionalFields": {
+          "appendAttribution": false,
+          "parse_mode": "HTML"
+        }
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        1020,
+        830
+      ],
+      "id": "0c734eab-448b-49bd-ae6f-00e58b6e5f11",
+      "name": "notif for parents",
+      "webhookId": "04a37752-61c0-4fc4-b41b-545967629667",
+      "credentials": {
+        "telegramApi": {
+          "id": "wfDDxynLdSaenqVG",
+          "name": "PRESENSI-BOT-ORANGTUA"
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "f6fcb06f-8243-49cb-b47b-ee51ca966746",
+              "name": "Nama Orang Tua",
+              "value": "={{ $('increment izin count1').first().json[\"Nama Orang Tua\"] }}",
+              "type": "string"
+            },
+            {
+              "id": "66ceef02-14ad-4800-9812-f741ec680e26",
+              "name": "nis",
+              "value": "={{ $('increment izin count1').first().json.nis }}",
+              "type": "number"
+            },
+            {
+              "id": "cd0e18f5-f29a-40d4-aeba-870d4a3a9cc3",
+              "name": "Nama Lengkap ",
+              "value": "={{ $('increment izin count1').first().json[\"Nama Lengkap \"] }}",
+              "type": "string"
+            },
+            {
+              "id": "11f4a5d5-c252-4035-9c38-185830d1a846",
+              "name": "Kelas",
+              "value": "={{ $('increment izin count1').first().json.Kelas }}",
+              "type": "string"
+            },
+            {
+              "id": "612a6b07-f96c-4846-8783-644eb1d811cc",
+              "name": "Tanggal",
+              "value": "={{ $('increment izin count1').first().json.Tanggal }}",
+              "type": "string"
+            },
+            {
+              "id": "b850d2be-37d8-40ca-9a30-9106a2a0ae93",
+              "name": "Jam",
+              "value": "={{ $('increment izin count1').first().json.Jam }}",
+              "type": "string"
+            },
+            {
+              "id": "2a0b340c-f2dc-497f-a642-8fecd9c04bcd",
+              "name": "statusKehadiran",
+              "value": "={{ $('increment izin count1').first().json.StatusKehadiran }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        800,
+        830
+      ],
+      "id": "dbde8f15-5023-4c36-b678-687fc1ea8eb8",
+      "name": "config for notif parents"
+    },
+    {
+      "parameters": {
+        "batchSize": "={{ $('get log attedance by parent telegram id').all().length }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        1460,
+        830
+      ],
+      "id": "55f82740-1245-4457-84af-28e27d387191",
+      "name": "loop log attedance"
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1AaG0ctaGsWa-_XPKZgztftM4bA_LUzqIgxSmHHRbTCI",
+          "mode": "list",
+          "cachedResultName": "Presensi",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1AaG0ctaGsWa-_XPKZgztftM4bA_LUzqIgxSmHHRbTCI/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "presensi",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1AaG0ctaGsWa-_XPKZgztftM4bA_LUzqIgxSmHHRbTCI/edit#gid=0"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.6,
+      "position": [
+        -300,
+        580
+      ],
+      "id": "459db657-9702-4d97-8797-4b3c891bbb86",
+      "name": "get students",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "hba6avQyVuS6n2OY",
+          "name": "GENERAL"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1AaG0ctaGsWa-_XPKZgztftM4bA_LUzqIgxSmHHRbTCI",
+          "mode": "list",
+          "cachedResultName": "Presensi",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1AaG0ctaGsWa-_XPKZgztftM4bA_LUzqIgxSmHHRbTCI/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "presensi",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1AaG0ctaGsWa-_XPKZgztftM4bA_LUzqIgxSmHHRbTCI/edit#gid=0"
+        },
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "nis",
+              "lookupValue": "={{ $('parse route').first().json.value }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.6,
+      "position": [
+        -300,
+        830
+      ],
+      "id": "9d554888-f320-49da-9e07-0790e8138d2d",
+      "name": "get student2",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "hba6avQyVuS6n2OY",
+          "name": "GENERAL"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentId": {
+          "__rl": true,
+          "value": "1AaG0ctaGsWa-_XPKZgztftM4bA_LUzqIgxSmHHRbTCI",
+          "mode": "list",
+          "cachedResultName": "Presensi",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1AaG0ctaGsWa-_XPKZgztftM4bA_LUzqIgxSmHHRbTCI/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "presensi",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1AaG0ctaGsWa-_XPKZgztftM4bA_LUzqIgxSmHHRbTCI/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "nis": "={{ $json.nis }}",
+            "Hadir": "={{ $json.Hadir }}",
+            "Sakit": "={{ $json.Sakit }}",
+            "Izin": "={{ $json.Izin }}",
+            "Alfa": "={{ $json.Alfa }}",
+            "Tanggal": "={{ $json.Tanggal }}",
+            "Jam": "={{ $json.Jam }}"
+          },
+          "matchingColumns": [
+            "nis"
+          ],
+          "schema": [
+            {
+              "id": "nis",
+              "displayName": "nis",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Nama Lengkap ",
+              "displayName": "Nama Lengkap ",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Kelas",
+              "displayName": "Kelas",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Nama Orang Tua",
+              "displayName": "Nama Orang Tua",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Telegram ID Orang Tua",
+              "displayName": "Telegram ID Orang Tua",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Hadir",
+              "displayName": "Hadir",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Sakit",
+              "displayName": "Sakit",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Izin",
+              "displayName": "Izin",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Alfa",
+              "displayName": "Alfa",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Tanggal",
+              "displayName": "Tanggal",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Jam",
+              "displayName": "Jam",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "row_number",
+              "displayName": "row_number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "readOnly": true,
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.6,
+      "position": [
+        140,
+        830
+      ],
+      "id": "09e07ba7-416a-4631-a155-96aed3afd50b",
+      "name": "updates on students izin",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "hba6avQyVuS6n2OY",
+          "name": "GENERAL"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1AaG0ctaGsWa-_XPKZgztftM4bA_LUzqIgxSmHHRbTCI",
+          "mode": "list",
+          "cachedResultName": "Presensi",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1AaG0ctaGsWa-_XPKZgztftM4bA_LUzqIgxSmHHRbTCI/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 464786327,
+          "mode": "list",
+          "cachedResultName": "ABSENSI_LOG",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1AaG0ctaGsWa-_XPKZgztftM4bA_LUzqIgxSmHHRbTCI/edit#gid=464786327"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "NIS": "={{ $('increment izin count1').first().json.nis }}",
+            "Nama Lengkap": "={{ $('increment izin count1').first().json[\"Nama Lengkap \"] }}",
+            "Kelas": "={{ $('increment izin count1').first().json.Kelas }}",
+            "StatusKehadiran": "={{ $('increment izin count1').first().json.StatusKehadiran }}",
+            "Tanggal": "={{ $('increment izin count1').first().json.Tanggal }}",
+            "Jam": "={{ $('increment izin count1').first().json.Jam }}",
+            "KM Telegram ID": "={{ $('config').first().json.chatid_for_callback_query }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "NIS",
+              "displayName": "NIS",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Nama Lengkap",
+              "displayName": "Nama Lengkap",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Kelas",
+              "displayName": "Kelas",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "StatusKehadiran",
+              "displayName": "StatusKehadiran",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Tanggal",
+              "displayName": "Tanggal",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Jam",
+              "displayName": "Jam",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "KM Telegram ID",
+              "displayName": "KM Telegram ID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Ortu Telegram ID",
+              "displayName": "Ortu Telegram ID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.6,
+      "position": [
+        360,
+        830
+      ],
+      "id": "fe4ff90e-13ed-4c5a-8246-315710d6455f",
+      "name": "updates on log attedance",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "hba6avQyVuS6n2OY",
+          "name": "GENERAL"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1AaG0ctaGsWa-_XPKZgztftM4bA_LUzqIgxSmHHRbTCI",
+          "mode": "list",
+          "cachedResultName": "Presensi",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1AaG0ctaGsWa-_XPKZgztftM4bA_LUzqIgxSmHHRbTCI/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 464786327,
+          "mode": "list",
+          "cachedResultName": "ABSENSI_LOG",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1AaG0ctaGsWa-_XPKZgztftM4bA_LUzqIgxSmHHRbTCI/edit#gid=464786327"
+        },
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "NIS",
+              "lookupValue": "={{ $('config for notif parents').item.json.nis }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.6,
+      "position": [
+        1240,
+        830
+      ],
+      "id": "2cf9f42a-72f7-44f3-b98b-8183ab7dae32",
+      "name": "get log attedance by parent telegram id",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "hba6avQyVuS6n2OY",
+          "name": "GENERAL"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentId": {
+          "__rl": true,
+          "value": "1AaG0ctaGsWa-_XPKZgztftM4bA_LUzqIgxSmHHRbTCI",
+          "mode": "list",
+          "cachedResultName": "Presensi",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1AaG0ctaGsWa-_XPKZgztftM4bA_LUzqIgxSmHHRbTCI/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 464786327,
+          "mode": "list",
+          "cachedResultName": "ABSENSI_LOG",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1AaG0ctaGsWa-_XPKZgztftM4bA_LUzqIgxSmHHRbTCI/edit#gid=464786327"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "row_number": "={{ $json.row_number }}",
+            "NIS": "={{ $('increment izin count1').item.json.nis }}",
+            "Ortu Telegram ID": "={{ $('increment izin count1').item.json[\"Telegram ID Orang Tua\"] }}"
+          },
+          "matchingColumns": [
+            "row_number"
+          ],
+          "schema": [
+            {
+              "id": "NIS",
+              "displayName": "NIS",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Nama Lengkap",
+              "displayName": "Nama Lengkap",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Kelas",
+              "displayName": "Kelas",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "StatusKehadiran",
+              "displayName": "StatusKehadiran",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Tanggal",
+              "displayName": "Tanggal",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Jam",
+              "displayName": "Jam",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "KM Telegram ID",
+              "displayName": "KM Telegram ID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Ortu Telegram ID",
+              "displayName": "Ortu Telegram ID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "row_number",
+              "displayName": "row_number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "readOnly": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.6,
+      "position": [
+        1680,
+        830
+      ],
+      "id": "b7feeb57-1591-4fc9-8e07-c44315bddf06",
+      "name": "update data log attedance",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "hba6avQyVuS6n2OY",
+          "name": "GENERAL"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "KM": {
+      "main": [
+        [
+          {
+            "node": "config",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "loading message": {
+      "main": [
+        [
+          {
+            "node": "routes",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "parse route": {
+      "main": [
+        [
+          {
+            "node": "is underscore category route?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "routes": {
+      "main": [
+        [
+          {
+            "node": " welcome message",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": " help message",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "get students",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "get student2",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "get student2",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "get student2",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "get student2",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "not match message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "config": {
+      "main": [
+        [
+          {
+            "node": "parse route",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "loop students": {
+      "main": [
+        [],
+        [
+          {
+            "node": "parse student",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "parse student": {
+      "main": [
+        [
+          {
+            "node": "student message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "student message": {
+      "main": [
+        [
+          {
+            "node": "loop students",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "is underscore category route?": {
+      "main": [
+        [
+          {
+            "node": "loading for edit message",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "loading message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "loading for edit message": {
+      "main": [
+        [
+          {
+            "node": "routes",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "success update izin student message1": {
+      "main": [
+        [
+          {
+            "node": "config for notif parents",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "config for notif parents": {
+      "main": [
+        [
+          {
+            "node": "notif for parents",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "get students": {
+      "main": [
+        [
+          {
+            "node": "loop students",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "get student2": {
+      "main": [
+        [
+          {
+            "node": "increment izin count1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "increment izin count1": {
+      "main": [
+        [
+          {
+            "node": "updates on students izin",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "updates on students izin": {
+      "main": [
+        [
+          {
+            "node": "updates on log attedance",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "updates on log attedance": {
+      "main": [
+        [
+          {
+            "node": "success update izin student message1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "notif for parents": {
+      "main": [
+        [
+          {
+            "node": "get log attedance by parent telegram id",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "get log attedance by parent telegram id": {
+      "main": [
+        [
+          {
+            "node": "loop log attedance",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "loop log attedance": {
+      "main": [
+        [],
+        [
+          {
+            "node": "update data log attedance",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "update data log attedance": {
+      "main": [
+        [
+          {
+            "node": "loop log attedance",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "a29c7a81-b6b1-4426-8c59-ec498b53b5d1",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "d73d1add8a100f00d86dcd36ac2d7ddd68e628d8d52b449bc6e79b86abbd6bd6"
+  },
+  "id": "avapsFmuQACsfOSu",
+  "tags": [
+    {
+      "createdAt": "2025-10-24T01:20:24.935Z",
+      "updatedAt": "2025-10-24T01:20:24.935Z",
+      "id": "SU0zGQ1m7oJs0FW5",
+      "name": "presensi"
+    },
+    {
+      "createdAt": "2025-09-25T11:39:44.399Z",
+      "updatedAt": "2025-09-25T11:39:44.399Z",
+      "id": "veNQI1LVdtTojF7r",
+      "name": "Telegram"
+    }
+  ]
+}
